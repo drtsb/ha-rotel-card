@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-check:
+    name: Typecheck, Lint, Build & HACS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript typecheck
+        run: npm run typecheck --if-present
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: HACS validation
+        uses: hacs/action@main
+        with:
+          category: "plugin"
+
+  version-check:
+    name: Check package.json version bump (PR only)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: build-and-check
+
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base
+
+      - name: Compare package.json versions
+        run: |
+          echo "Comparing versions..."
+          HEAD_VER=$(jq -r '.version' package.json)
+          BASE_VER=$(jq -r '.version' base/package.json)
+          echo "Base version: $BASE_VER"
+          echo "Head version: $HEAD_VER"
+          if [ "$HEAD_VER" = "$BASE_VER" ]; then
+            echo "::error::package.json version was not incremented. Please bump version for any functional/UI changes."
+            exit 1
+          fi
+          if ! dpkg --compare-versions "$HEAD_VER" gt "$BASE_VER"; then
+            echo "::error::Head version ($HEAD_VER) must be greater than base version ($BASE_VER)."
+            exit 1
+          fi
+          echo "Version bump OK: $BASE_VER -> $HEAD_VER"

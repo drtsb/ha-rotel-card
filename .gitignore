@@ -1,0 +1,31 @@
+# Node / JavaScript
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build / Tooling caches
+.cache/
+.temp/
+.tmp/
+*.tsbuildinfo
+.eslintcache
+
+# Build artifacts
+# NOTE: The resulting distributable (dist/ or rotel-card.js) MUST be committed
+# to this repository OR attached to GitHub Releases. HACS downloads the
+# built file directly, so do NOT ignore it by default.
+# If you choose the "attach to release only" approach, you may uncomment
+# the lines below, but ensure release.yml always uploads the built file.
+# dist/
+# rotel-card.js
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.local
+*.swp
+*.swo
