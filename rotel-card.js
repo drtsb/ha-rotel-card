@@ -72,6 +72,25 @@ const t=t=>(e,o)=>{ void 0!==o?o.addInitializer(()=>{customElements.define(t,e);
  * SPDX-License-Identifier: BSD-3-Clause
  */function r(r){return n({...r,state:true,attribute:false})}
 
+const FIXED_VOLUME_ATTRIBUTES = [
+    "fixed_volume",
+    "fixedVolume",
+    "pass_through",
+    "passThrough",
+    "is_fixed_volume",
+];
+function isFixedVolumeActive(attrs) {
+    for (const key of FIXED_VOLUME_ATTRIBUTES) {
+        const value = attrs[key];
+        if (typeof value === "string")
+            return value !== "off" && value !== "false" && value !== "0";
+        if (typeof value === "boolean")
+            return value;
+        if (typeof value === "number")
+            return value !== 0;
+    }
+    return false;
+}
 let RotelAmplifierCard = class RotelAmplifierCard extends i {
     setConfig(config) {
         if (!config.entity)
@@ -90,6 +109,9 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
     get _entity() {
         return this.hass?.states?.[this._config.entity];
     }
+    get _fixedVolume() {
+        return isFixedVolumeActive(this._entity?.attributes ?? {});
+    }
     _call(service, data = {}) {
         this.hass.callService("media_player", service, { entity_id: this._config.entity, ...data });
     }
@@ -100,8 +122,14 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         const muted = this._entity?.attributes?.is_volume_muted;
         this._call("volume_mute", { is_volume_muted: !muted });
     }
-    _setSource(src) { this._call("select_source", { source: src }); }
+    _setSource(src) {
+        if (this._fixedVolume)
+            return;
+        this._call("select_source", { source: src });
+    }
     _setVolume(e) {
+        if (this._fixedVolume)
+            return;
         const v = parseFloat(e.target.value);
         this._call("volume_set", { volume_level: v });
     }
@@ -116,6 +144,7 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         const sources = attrs.source_list ?? [];
         const muted = !!attrs.is_volume_muted;
         const on = state !== "off" && state !== "standby" && state !== "unavailable";
+        const fixedVolume = this._fixedVolume;
         const model = this._config.model || attrs.model || attrs.device_model || attrs.friendly_name || "";
         return b `
       <ha-card>
@@ -137,23 +166,23 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
             <div class="vnum">${Math.round(volume * 100)}</div>
             <div class="vlabel">VOLUME</div>
             <input type="range" min="0" max="1" step="0.01" .value=${String(volume)}
-              @input=${this._setVolume} />
+              ?disabled=${fixedVolume} @input=${this._setVolume} />
           </div>
           <div class="controls">
-            <ha-icon-button class="vol" .label=${"Volume down"} @click=${this._volumeDown}>
+            <ha-icon-button class="vol" .label=${"Volume down"} ?disabled=${fixedVolume} @click=${this._volumeDown}>
               <ha-icon icon="mdi:volume-minus"></ha-icon>
             </ha-icon-button>
-            <ha-icon-button class="vol mute" .label=${muted ? "Unmute" : "Mute"} @click=${this._mute}>
+            <ha-icon-button class="vol mute" .label=${muted ? "Unmute" : "Mute"} ?disabled=${fixedVolume} @click=${this._mute}>
               <ha-icon icon=${muted ? "mdi:volume-off" : "mdi:volume-high"}></ha-icon>
             </ha-icon-button>
-            <ha-icon-button class="vol" .label=${"Volume up"} @click=${this._volumeUp}>
+            <ha-icon-button class="vol" .label=${"Volume up"} ?disabled=${fixedVolume} @click=${this._volumeUp}>
               <ha-icon icon="mdi:volume-plus"></ha-icon>
             </ha-icon-button>
           </div>
           <div class="source">
             <div class="src-label">SOURCE: ${source}</div>
             <div class="srcs">
-              ${sources.map((s) => b `<button class=${s === source ? "active" : ""} @click=${() => this._setSource(s)}>${s}</button>`)}
+              ${sources.map((s) => b `<button class=${s === source ? "active" : ""} ?disabled=${fixedVolume} @click=${() => this._setSource(s)}>${s}</button>`)}
             </div>
           </div>
         </div>
@@ -185,13 +214,17 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
       ha-icon-button:hover { color: #fff; }
       ha-icon-button.power.on ha-icon { color: var(--success-color, green); }
       ha-icon-button.power.off ha-icon { color: var(--error-color, red); }
+      ha-icon-button[disabled],
+      ha-icon-button[disabled]:hover { color: #5a5a5a; pointer-events: none; }
       .volume { text-align: center; }
       .vnum { font-size: 48px; font-weight: 300; color: #c9a227; }
       .vlabel { font-size: 11px; letter-spacing: 2px; color: #888; }
       input[type=range] { width: 100%; }
+      input[type=range][disabled] { opacity: 0.4; cursor: not-allowed; }
       .controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
       button { background: #2a2a2a; color: #e0e0e0; border: 1px solid #444; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
       button.active { background: #c9a227; color: #000; }
+      button[disabled] { opacity: 0.4; cursor: not-allowed; }
       .source { }
       .src-label { font-size: 12px; color: #888; margin-bottom: 6px; }
       .srcs { display: flex; flex-wrap: wrap; gap: 6px; }

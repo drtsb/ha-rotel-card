@@ -115,6 +115,9 @@ npm run typecheck
 
 # Production build
 npm run build
+
+# Unit tests
+npm run test
 ```
 
 After building, a single self-contained `rotel-card.js` file will be generated in the root of the repository (or in `dist/` depending on your build config).
@@ -125,6 +128,7 @@ Pull requests are welcome. Before submitting a PR, make sure you follow the requ
 
 - `npm run typecheck` passes with no errors
 - `npm run build` completes successfully
+- `npm run test` passes with no errors
 - Version in `package.json` has been incremented appropriately
 
 ## License
