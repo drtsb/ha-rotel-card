@@ -1,9 +1,11 @@
 # Rotel Card for Home Assistant
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
-[![GitHub Release](https://img.shields.io/github/v/release/drtsb/ha-rotel-card?include_prereleases&sort=semver)](https://github.com/drtsb/ha-rotel-card/releases)
-[![GitHub last commit](https://img.shields.io/github/last-commit/drtsb/ha-rotel-card)](https://github.com/drtsb/ha-rotel-card/commits)
-[![License](https://img.shields.io/github/license/drtsb/ha-rotel-card)](LICENSE)
+[![Active Installations](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=Active%20Installs&query=%24.rotel.total&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json)](https://analytics.home-assistant.io/integrations/)
+[![GitHub All Releases](https://img.shields.io/github/downloads/drtsb/ha-rotel-card/total?color=2ea44f&logo=github&label=Downloads)](https://github.com/drtsb/ha-rotel-card/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/drtsb/ha-rotel-card?color=blue&logo=github)](https://github.com/drtsb/ha-rotel-card/releases/latest)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
+[![CI](https://github.com/drtsb/ha-rotel-card/actions/workflows/ci.yml/badge.svg)](https://github.com/drtsb/ha-rotel-card/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/drtsb/ha-rotel-card?color=lightgrey)](LICENSE)
 
 A custom Lovelace card for controlling **Rotel** amplifiers through the [ha-rotel-integration](https://github.com/drtsb/ha-rotel-integration) in Home Assistant.
 
