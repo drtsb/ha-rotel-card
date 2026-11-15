@@ -1,6 +1,6 @@
 name: CI Coverage
 
-on:
+'on':
   push:
     branches: ['*']
   pull_request:
