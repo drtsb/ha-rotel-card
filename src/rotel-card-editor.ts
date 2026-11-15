@@ -8,6 +8,15 @@ interface RotelCardConfig {
   model?: string;
   show_settings?: boolean;
   hide_volume?: boolean;
+  settings_entities?: {
+    bass?: string;
+    treble?: string;
+    balance?: string;
+    speakers_a?: string;
+    speakers_b?: string;
+    dimmer?: string;
+    tone_bypass?: string;
+  };
 }
 
 interface FormSchema {
@@ -43,6 +52,13 @@ export class RotelCardEditor extends LitElement {
       { name: "model", selector: { text: {} } },
       { name: "show_settings", selector: { boolean: {} } },
       { name: "hide_volume", selector: { boolean: {} } },
+      { name: "settings_entities.bass", selector: { entity: { domain: "number" } } },
+      { name: "settings_entities.treble", selector: { entity: { domain: "number" } } },
+      { name: "settings_entities.balance", selector: { entity: { domain: "number" } } },
+      { name: "settings_entities.speakers_a", selector: { entity: { domain: "switch" } } },
+      { name: "settings_entities.speakers_b", selector: { entity: { domain: "switch" } } },
+      { name: "settings_entities.dimmer", selector: { entity: { domain: "select" } } },
+      { name: "settings_entities.tone_bypass", selector: { entity: { domain: "switch" } } },
     ];
 
     return html`

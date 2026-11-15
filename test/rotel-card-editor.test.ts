@@ -26,11 +26,18 @@ describe("rotel-card-editor", () => {
     const form = editor.shadowRoot?.querySelector("ha-form");
     expect(form).toBeDefined();
     const schema = (form as any).schema;
-    expect(schema).toHaveLength(4);
+    expect(schema).toHaveLength(11);
     expect(schema[0]).toMatchObject({ name: "entity", selector: { entity: { domain: "media_player" } } });
     expect(schema[1]).toMatchObject({ name: "model", selector: { text: {} } });
     expect(schema[2]).toMatchObject({ name: "show_settings", selector: { boolean: {} } });
     expect(schema[3]).toMatchObject({ name: "hide_volume", selector: { boolean: {} } });
+    expect(schema[4]).toMatchObject({ name: "settings_entities.bass", selector: { entity: { domain: "number" } } });
+    expect(schema[5]).toMatchObject({ name: "settings_entities.treble", selector: { entity: { domain: "number" } } });
+    expect(schema[6]).toMatchObject({ name: "settings_entities.balance", selector: { entity: { domain: "number" } } });
+    expect(schema[7]).toMatchObject({ name: "settings_entities.speakers_a", selector: { entity: { domain: "switch" } } });
+    expect(schema[8]).toMatchObject({ name: "settings_entities.speakers_b", selector: { entity: { domain: "switch" } } });
+    expect(schema[9]).toMatchObject({ name: "settings_entities.dimmer", selector: { entity: { domain: "select" } } });
+    expect(schema[10]).toMatchObject({ name: "settings_entities.tone_bypass", selector: { entity: { domain: "switch" } } });
   });
 
   it("dispatches config-changed with merged values on value-changed", async () => {
