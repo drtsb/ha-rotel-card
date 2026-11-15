@@ -27,13 +27,13 @@
     "@open-wc/testing": "^5.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
     "@rollup/plugin-typescript": "^11.0.0",
-    "jsdom": "^26.1.0",
+    "jsdom": "^31.0.1",
     "rollup": "^4.0.0",
     "tslib": "^2.6.0",
     "typescript": "^5.0.0",
     "vitest": "^4.1.12"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12.0"
   }
 }

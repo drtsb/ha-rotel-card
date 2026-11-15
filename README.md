@@ -94,7 +94,7 @@ dimmer_entity: select.rotel_display_dimmer
 
 ### Requirements
 
-- Node.js **v20+**
+- Node.js **v22+** (v22.12 or newer)
 - npm / pnpm / yarn
 
 ### Setup
