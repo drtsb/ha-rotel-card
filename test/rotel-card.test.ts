@@ -191,4 +191,33 @@ describe("rotel-amplifier-card", () => {
     expect(cssText).toMatch(/ha-icon-button\.power\.off ha-icon\s*\{\s*color:\s*var\(--error-color,\s*red\)/);
     expect(cssText).toMatch(/input\[type=range\]\[disabled\]/);
   });
+
+  it("applies theme_variables as inline styles on the root ha-card", async () => {
+    const { card } = await createCard({
+      theme_variables: { "--rotel-bg": "#111111", "--rotel-text": "#ffffff", "--rotel-button-color": "#444444" },
+    });
+
+    const haCard = query<HTMLElement>(card, "ha-card");
+    expect(haCard.style.getPropertyValue("--rotel-bg")).toBe("#111111");
+    expect(haCard.style.getPropertyValue("--rotel-text")).toBe("#ffffff");
+    expect(haCard.style.getPropertyValue("--rotel-button-color")).toBe("#444444");
+  });
+
+  it("re-applies theme_variables when applyThemeVariables is called explicitly", async () => {
+    const { card } = await createCard({ theme_variables: { "--rotel-text": "#aaaaaa" } });
+
+    const haCard = query<HTMLElement>(card, "ha-card");
+    expect(haCard.style.getPropertyValue("--rotel-text")).toBe("#aaaaaa");
+
+    card.setConfig({ type: "custom:rotel-amplifier-card", entity: ENTITY, theme_variables: { "--rotel-text": "#00ff00" } });
+    card.applyThemeVariables();
+    expect(haCard.style.getPropertyValue("--rotel-text")).toBe("#00ff00");
+  });
+
+  it("leaves the ha-card inline style empty when theme_variables is not configured", async () => {
+    const { card } = await createCard();
+
+    const haCard = query<HTMLElement>(card, "ha-card");
+    expect(haCard.style.length).toBe(0);
+  });
 });

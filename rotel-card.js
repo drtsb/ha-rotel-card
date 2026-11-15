@@ -100,11 +100,32 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
     getCardSize() {
         return 4;
     }
+    /**
+     * Maps config.theme_variables to inline CSS custom properties on the
+     * root <ha-card> element so users can theme the card via YAML without
+     * touching the source code.
+     */
+    applyThemeVariables() {
+        const card = this.shadowRoot?.querySelector("ha-card");
+        if (!card)
+            return;
+        const variables = this._config?.theme_variables;
+        if (!variables || typeof variables !== "object")
+            return;
+        for (const [name, value] of Object.entries(variables)) {
+            card.style.setProperty(name, String(value));
+        }
+    }
     static getStubConfig() {
         return { entity: "media_player.rotel", show_name: true, show_volume: true, show_inputs: true };
     }
     shouldUpdate(changed) {
         return !!this._config && (changed.has("hass") || changed.has("_config"));
+    }
+    updated(changed) {
+        super.updated(changed);
+        if (changed.has("_config"))
+            this.applyThemeVariables();
     }
     get _entity() {
         return this.hass?.states?.[this._config.entity];
@@ -193,40 +214,40 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         return i$3 `
       :host { display: block; }
       ha-card {
-        background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
-        color: #e0e0e0;
-        border: 1px solid #333;
+        background: var(--rotel-bg, linear-gradient(145deg, #1a1a1a, #0d0d0d));
+        color: var(--rotel-text, var(--primary-text-color, #e0e0e0));
+        border: 1px solid var(--rotel-border, #333);
         border-radius: 12px;
         padding: 16px;
         font-family: "Roboto", sans-serif;
       }
       .wrap { display: flex; flex-direction: column; gap: 12px; }
       .header { display: flex; justify-content: space-between; align-items: center; }
-      .brand { font-size: 20px; font-weight: 700; letter-spacing: 4px; color: #c9a227; }
+      .brand { font-size: 20px; font-weight: 700; letter-spacing: 4px; color: var(--rotel-accent, #c9a227); }
       .brand-group { display: flex; align-items: baseline; gap: 10px; }
-      .model { font-size: 12px; letter-spacing: 1px; color: #888; }
+      .model { font-size: 12px; letter-spacing: 1px; color: var(--rotel-text-muted, var(--secondary-text-color, #888)); }
       ha-icon-button {
         --mdc-icon-button-size: 40px;
         --mdc-icon-size: 22px;
-        color: #cfcfcf;
+        color: var(--rotel-icon-color, #cfcfcf);
       }
       ha-icon-button ha-icon { width: 22px; height: 22px; }
       ha-icon-button:hover { color: #fff; }
       ha-icon-button.power.on ha-icon { color: var(--success-color, green); }
       ha-icon-button.power.off ha-icon { color: var(--error-color, red); }
       ha-icon-button[disabled],
-      ha-icon-button[disabled]:hover { color: #5a5a5a; pointer-events: none; }
-      .volume { text-align: center; }
-      .vnum { font-size: 48px; font-weight: 300; color: #c9a227; }
-      .vlabel { font-size: 11px; letter-spacing: 2px; color: #888; }
+      ha-icon-button[disabled]:hover { color: var(--rotel-disabled, #5a5a5a); pointer-events: none; }
+      .volume { text-align: center; background: var(--rotel-display-bg, transparent); }
+      .vnum { font-size: 48px; font-weight: 300; color: var(--rotel-display-text, #c9a227); }
+      .vlabel { font-size: 11px; letter-spacing: 2px; color: var(--rotel-text-muted, var(--secondary-text-color, #888)); }
       input[type=range] { width: 100%; }
       input[type=range][disabled] { opacity: 0.4; cursor: not-allowed; }
       .controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
-      button { background: #2a2a2a; color: #e0e0e0; border: 1px solid #444; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
-      button.active { background: #c9a227; color: #000; }
+      button { background: var(--rotel-button-color, #2a2a2a); color: var(--rotel-text, var(--primary-text-color, #e0e0e0)); border: 1px solid var(--rotel-border-button, #444); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+      button.active { background: var(--rotel-accent, #c9a227); color: var(--rotel-active-text, #000); }
       button[disabled] { opacity: 0.4; cursor: not-allowed; }
       .source { }
-      .src-label { font-size: 12px; color: #888; margin-bottom: 6px; }
+      .src-label { font-size: 12px; color: var(--rotel-text-muted, var(--secondary-text-color, #888)); margin-bottom: 6px; }
       .srcs { display: flex; flex-wrap: wrap; gap: 6px; }
     `;
     }
