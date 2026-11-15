@@ -58,14 +58,3 @@ jobs:
             COLOR="red"
           fi
           echo "color=$COLOR" >> $GITHUB_OUTPUT
-
-      - name: Update coverage badge Gist
-        if: github.ref == 'refs/heads/main' && secrets.GIST_SECRET != '' && secrets.GIST_ID != ''
-        uses: Schneegans/dynamic-badges-action@v3
-        with:
-          auth: ${{ secrets.GIST_SECRET }}
-          gistID: ${{ secrets.GIST_ID }}
-          filename: rotel-card-coverage.json
-          label: Coverage
-          message: "${{ steps.coverage.outputs.pct }}%"
-          color: ${{ steps.color.outputs.color }}
