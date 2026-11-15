@@ -92,6 +92,11 @@ function isFixedVolumeActive(attrs) {
     return false;
 }
 let RotelAmplifierCard = class RotelAmplifierCard extends i {
+    constructor() {
+        super(...arguments);
+        /** Debounce timer for source selection to avoid spamming HA */
+        this._sourceSelectTimer = null;
+    }
     setConfig(config) {
         if (!config.entity)
             throw new Error("entity is required");
@@ -143,10 +148,17 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         const muted = this._entity?.attributes?.is_volume_muted;
         this._call("volume_mute", { is_volume_muted: !muted });
     }
-    _setSource(src) {
+    _selectSource(source) {
         if (this._fixedVolume)
             return;
-        this._call("select_source", { source: src });
+        // Debounce: ignore rapid clicks within 300ms
+        if (this._sourceSelectTimer) {
+            clearTimeout(this._sourceSelectTimer);
+        }
+        this._sourceSelectTimer = setTimeout(() => {
+            this._call("select_source", { source });
+            this._sourceSelectTimer = null;
+        }, 300);
     }
     _setVolume(e) {
         if (this._fixedVolume)
@@ -167,6 +179,9 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         const on = state !== "off" && state !== "standby" && state !== "unavailable";
         const fixedVolume = this._fixedVolume;
         const model = this._config.model || attrs.model || attrs.device_model || attrs.friendly_name || "";
+        // Limit to 12 sources (2 rows × 6 columns) as per the CSS grid
+        const displaySources = sources.slice(0, 12);
+        const hasMoreSources = sources.length > 12;
         return b `
       <ha-card>
         <div class="wrap">
@@ -190,21 +205,36 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
               ?disabled=${fixedVolume} @input=${this._setVolume} />
           </div>
           <div class="controls">
-            <ha-icon-button class="vol" .label=${"Volume down"} ?disabled=${fixedVolume} @click=${this._volumeDown}>
+            <ha-icon-button class="control-btn vol" .label=${"Volume down"} ?disabled=${fixedVolume} @click=${this._volumeDown}>
               <ha-icon icon="mdi:volume-minus"></ha-icon>
             </ha-icon-button>
-            <ha-icon-button class="vol mute" .label=${muted ? "Unmute" : "Mute"} ?disabled=${fixedVolume} @click=${this._mute}>
+            <ha-icon-button class="control-btn vol mute" .label=${muted ? "Unmute" : "Mute"} ?disabled=${fixedVolume} @click=${this._mute}>
               <ha-icon icon=${muted ? "mdi:volume-off" : "mdi:volume-high"}></ha-icon>
             </ha-icon-button>
-            <ha-icon-button class="vol" .label=${"Volume up"} ?disabled=${fixedVolume} @click=${this._volumeUp}>
+            <ha-icon-button class="control-btn vol" .label=${"Volume up"} ?disabled=${fixedVolume} @click=${this._volumeUp}>
               <ha-icon icon="mdi:volume-plus"></ha-icon>
             </ha-icon-button>
           </div>
-          <div class="source">
-            <div class="src-label">SOURCE: ${source}</div>
-            <div class="srcs">
-              ${sources.map((s) => b `<button class=${s === source ? "active" : ""} ?disabled=${fixedVolume} @click=${() => this._setSource(s)}>${s}</button>`)}
+          <div class="rotel-panel">
+            <div class="source-grid">
+              ${displaySources.map((s) => b `
+                  <div class="source-item ${s === source ? "active" : ""}">
+                    <span class="source-label">${s}</span>
+                    <div class="source-led" aria-hidden="true"></div>
+                    <button
+                      class="rotel-btn"
+                      ?disabled=${fixedVolume}
+                      aria-label=${`Select source ${s}`}
+                      @click=${() => this._selectSource(s)}
+                    ></button>
+                  </div>
+              `)}
             </div>
+            ${hasMoreSources ? b `
+              <div class="source-truncation" aria-live="polite">
+                +${sources.length - 12} more
+              </div>
+            ` : ""}
           </div>
         </div>
       </ha-card>
@@ -221,34 +251,116 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         padding: 16px;
         font-family: "Roboto", sans-serif;
       }
-      .wrap { display: flex; flex-direction: column; gap: 12px; }
+.wrap { display: flex; flex-direction: column; gap: 0.75rem; }
       .header { display: flex; justify-content: space-between; align-items: center; }
-      .brand { font-size: 20px; font-weight: 700; letter-spacing: 4px; color: var(--rotel-accent, #c9a227); }
-      .brand-group { display: flex; align-items: baseline; gap: 10px; }
-      .model { font-size: 12px; letter-spacing: 1px; color: var(--rotel-text-muted, var(--secondary-text-color, #888)); }
+      .brand { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.25rem; color: var(--rotel-accent, #c9a227); }
+      .brand-group { display: flex; align-items: baseline; gap: 0.625rem; }
+      .model { font-size: 0.75rem; letter-spacing: 1px; color: var(--rotel-text-muted, var(--secondary-text-color, #888)); }
       ha-icon-button {
-        --mdc-icon-button-size: 40px;
-        --mdc-icon-size: 22px;
+        --mdc-icon-button-size: 2.5rem;
+        --mdc-icon-size: 1.375rem;
         color: var(--rotel-icon-color, #cfcfcf);
       }
-      ha-icon-button ha-icon { width: 22px; height: 22px; }
+      ha-icon-button ha-icon { width: 1.375rem; height: 1.375rem; }
       ha-icon-button:hover { color: #fff; }
       ha-icon-button.power.on ha-icon { color: var(--success-color, green); }
       ha-icon-button.power.off ha-icon { color: var(--error-color, red); }
       ha-icon-button[disabled],
       ha-icon-button[disabled]:hover { color: var(--rotel-disabled, #5a5a5a); pointer-events: none; }
       .volume { text-align: center; background: var(--rotel-display-bg, transparent); }
-      .vnum { font-size: 48px; font-weight: 300; color: var(--rotel-display-text, #c9a227); }
-      .vlabel { font-size: 11px; letter-spacing: 2px; color: var(--rotel-text-muted, var(--secondary-text-color, #888)); }
+      .vnum { font-size: 3rem; font-weight: 300; color: var(--rotel-display-text, #c9a227); }
+      .vlabel { font-size: 0.6875rem; letter-spacing: 2px; color: var(--rotel-text-muted, var(--secondary-text-color, #888)); }
       input[type=range] { width: 100%; }
       input[type=range][disabled] { opacity: 0.4; cursor: not-allowed; }
-      .controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
-      button { background: var(--rotel-button-color, #2a2a2a); color: var(--rotel-text, var(--primary-text-color, #e0e0e0)); border: 1px solid var(--rotel-border-button, #444); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
-      button.active { background: var(--rotel-accent, #c9a227); color: var(--rotel-active-text, #000); }
-      button[disabled] { opacity: 0.4; cursor: not-allowed; }
-      .source { }
-      .src-label { font-size: 12px; color: var(--rotel-text-muted, var(--secondary-text-color, #888)); margin-bottom: 6px; }
-      .srcs { display: flex; flex-wrap: wrap; gap: 6px; }
+      .controls { display: flex; align-items: center; justify-content: center; gap: 0.625rem; }
+      .control-btn { background: var(--rotel-button-color, #2a2a2a); color: var(--rotel-text, var(--primary-text-color, #e0e0e0)); border: 1px solid var(--rotel-border-button, #444); border-radius: 0.375rem; padding: 0.375rem 0.75rem; cursor: pointer; }
+      .control-btn.active { background: var(--rotel-accent, #c9a227); color: var(--rotel-active-text, #000); }
+      .control-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+      /* Rotel-style source selector panel */
+      .rotel-panel {
+        background: linear-gradient(135deg, #d4d4d4 0%, #b8b8b8 100%);
+        padding: 1.5rem;
+        border-radius: var(--ha-card-border-radius, 12px);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8),
+                    inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+      }
+      .source-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        row-gap: 1.25rem;
+        column-gap: 0.625rem;
+        justify-items: center;
+      }
+      .source-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.375rem;
+      }
+      .source-label {
+        font-family: 'Arial', sans-serif;
+        font-size: 0.625rem;
+        font-weight: 700;
+        color: #333;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+      }
+      .source-led {
+        width: 0.375rem;
+        height: 0.375rem;
+        border-radius: 50%;
+        background: #2a2a2a;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.4);
+        transition: all 0.3s ease;
+      }
+      .source-item.active .source-led {
+        background: #0078ff;
+        box-shadow: 0 0 0.25rem #0078ff, 0 0 0.5rem #0078ff, inset 0 1px 2px rgba(255,255,255,0.8);
+      }
+      .rotel-btn {
+        position: relative;
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: 50%;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        background: linear-gradient(135deg, #fdfdfd 0%, #c3c3c3 100%);
+        box-shadow: 0 0.25rem 0.3125rem rgba(0,0,0,0.3), inset 0 0.125rem 0.1875rem rgba(255,255,255,0.9), inset 0 -0.125rem 0.1875rem rgba(0,0,0,0.2);
+        transition: transform 0.05s ease, box-shadow 0.05s ease;
+      }
+      .rotel-btn::before {
+        content: '';
+        position: absolute;
+        top: -0.1875rem;
+        left: -0.1875rem;
+        right: -0.1875rem;
+        bottom: -0.1875rem;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #999 0%, #e6e6e6 100%);
+        z-index: -1;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.8);
+      }
+      .rotel-btn:active {
+        transform: translateY(0.125rem);
+        box-shadow: 0 1px 1px rgba(0,0,0,0.2), inset 0 0.1875rem 0.3125rem rgba(0,0,0,0.5), inset 0 -1px 2px rgba(255,255,255,0.4);
+      }
+      .rotel-btn[disabled] {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .rotel-btn:focus-visible {
+        outline: 2px solid var(--rotel-accent, #c9a227);
+        outline-offset: 2px;
+      }
+      .source-truncation {
+        margin-top: 1rem;
+        text-align: center;
+        font-size: 0.75rem;
+        color: var(--rotel-text-muted, var(--secondary-text-color, #888));
+      }
     `;
     }
 };
