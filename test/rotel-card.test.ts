@@ -140,26 +140,30 @@ describe("rotel-amplifier-card", () => {
   });
 
   it("calls select_source for the pressed source button", async () => {
+    vi.useFakeTimers();
     const { card, callService } = await createCard({ source: "CD" });
 
-    const cdButton = Array.from(queryAll<HTMLButtonElement>(card, ".srcs button")).find(
-      (btn) => btn.textContent?.trim() === "CD",
+    const cdButton = Array.from(queryAll<HTMLButtonElement>(card, ".rotel-btn")).find(
+      (btn) => btn.closest(".source-item")?.querySelector(".source-label")?.textContent?.trim() === "CD",
     );
     expect(cdButton).toBeDefined();
 
     cdButton!.click();
+    // Advance timers past the 300ms debounce
+    await vi.advanceTimersByTimeAsync(300);
     expect(callService).toHaveBeenCalledTimes(1);
     expect(callService).toHaveBeenCalledWith("media_player", "select_source", {
       entity_id: ENTITY,
       source: "CD",
     });
+    vi.useRealTimers();
   });
 
   it("marks the active source button", async () => {
     const { card } = await createCard({}, { source: "AUX" });
 
-    const active = query(card, ".srcs button.active");
-    expect(active.textContent?.trim()).toBe("AUX");
+    const active = query(card, ".source-item.active .rotel-btn");
+    expect(active.closest(".source-item")?.querySelector(".source-label")?.textContent?.trim()).toBe("AUX");
   });
 
   it("sends toggle when the power button is pressed while off", async () => {
