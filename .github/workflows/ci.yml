@@ -39,7 +39,6 @@ jobs:
             echo "Coverage summary file not found"
             exit 1
           fi
-          # Extract total statements.pct (or lines.pct as fallback)
           PCT=$(jq -r '.total.statements.pct // .total.lines.pct // 0' "$COVERAGE_FILE")
           echo "Coverage: ${PCT}%"
           echo "pct=$PCT" >> $GITHUB_OUTPUT
