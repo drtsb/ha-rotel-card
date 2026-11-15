@@ -67,5 +67,3 @@ jobs:
           label: Coverage
           message: "${{ steps.coverage.outputs.pct }}%"
           color: ${{ steps.color.outputs.color }}
-          minColorRange: 0
-          maxColorRange: 100
