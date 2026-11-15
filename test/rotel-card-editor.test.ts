@@ -21,23 +21,37 @@ describe("rotel-card-editor", () => {
     expect(customElements.get("rotel-card-editor")).toBe(RotelCardEditor);
   });
 
-  it("renders ha-form with media_player entity selector", async () => {
+  it("renders ha-form with media_player entity selector and theme dropdown", async () => {
     const editor = await createEditor();
     const form = editor.shadowRoot?.querySelector("ha-form");
     expect(form).toBeDefined();
     const schema = (form as any).schema;
-    expect(schema).toHaveLength(11);
+    // Schema should have: entity, model, theme, show_settings, hide_volume = 5 items when show_settings is false
+    expect(schema).toHaveLength(5);
     expect(schema[0]).toMatchObject({ name: "entity", selector: { entity: { domain: "media_player" } } });
     expect(schema[1]).toMatchObject({ name: "model", selector: { text: {} } });
-    expect(schema[2]).toMatchObject({ name: "show_settings", selector: { boolean: {} } });
-    expect(schema[3]).toMatchObject({ name: "hide_volume", selector: { boolean: {} } });
-    expect(schema[4]).toMatchObject({ name: "settings_entities.bass", selector: { entity: { domain: "number" } } });
-    expect(schema[5]).toMatchObject({ name: "settings_entities.treble", selector: { entity: { domain: "number" } } });
-    expect(schema[6]).toMatchObject({ name: "settings_entities.balance", selector: { entity: { domain: "number" } } });
-    expect(schema[7]).toMatchObject({ name: "settings_entities.speakers_a", selector: { entity: { domain: "switch" } } });
-    expect(schema[8]).toMatchObject({ name: "settings_entities.speakers_b", selector: { entity: { domain: "switch" } } });
-    expect(schema[9]).toMatchObject({ name: "settings_entities.dimmer", selector: { entity: { domain: "select" } } });
-    expect(schema[10]).toMatchObject({ name: "settings_entities.tone_bypass", selector: { entity: { domain: "switch" } } });
+    expect(schema[2]).toMatchObject({
+      name: "theme",
+      selector: { select: { options: ["silver", "black", "champagne", "minimal"], mode: "dropdown" } },
+    });
+    expect(schema[3]).toMatchObject({ name: "show_settings", selector: { boolean: {} } });
+    expect(schema[4]).toMatchObject({ name: "hide_volume", selector: { boolean: {} } });
+  });
+
+  it("shows settings entities when show_settings is true", async () => {
+    const editor = await createEditor({ ...CONFIG, show_settings: true });
+    const form = editor.shadowRoot?.querySelector("ha-form");
+    expect(form).toBeDefined();
+    const schema = (form as any).schema;
+    // Should have 5 base + 7 settings entities = 12 items
+    expect(schema).toHaveLength(12);
+    expect(schema[5]).toMatchObject({ name: "settings_entities.bass", selector: { entity: { domain: "number" } } });
+    expect(schema[6]).toMatchObject({ name: "settings_entities.treble", selector: { entity: { domain: "number" } } });
+    expect(schema[7]).toMatchObject({ name: "settings_entities.balance", selector: { entity: { domain: "number" } } });
+    expect(schema[8]).toMatchObject({ name: "settings_entities.speakers_a", selector: { entity: { domain: "switch" } } });
+    expect(schema[9]).toMatchObject({ name: "settings_entities.speakers_b", selector: { entity: { domain: "switch" } } });
+    expect(schema[10]).toMatchObject({ name: "settings_entities.dimmer", selector: { entity: { domain: "select" } } });
+    expect(schema[11]).toMatchObject({ name: "settings_entities.tone_bypass", selector: { entity: { domain: "switch" } } });
   });
 
   it("dispatches config-changed with merged values on value-changed", async () => {

@@ -90,19 +90,25 @@ let RotelCardEditor = class RotelCardEditor extends i {
     render() {
         if (!this._config || !this.hass)
             return b ``;
+        const showSettings = this._config.show_settings === true;
         const schema = [
             { name: "entity", selector: { entity: { domain: "media_player" } } },
             { name: "model", selector: { text: {} } },
+            {
+                name: "theme",
+                selector: {
+                    select: {
+                        options: ["silver", "black", "champagne", "minimal"],
+                        mode: "dropdown",
+                    },
+                },
+            },
             { name: "show_settings", selector: { boolean: {} } },
             { name: "hide_volume", selector: { boolean: {} } },
-            { name: "settings_entities.bass", selector: { entity: { domain: "number" } } },
-            { name: "settings_entities.treble", selector: { entity: { domain: "number" } } },
-            { name: "settings_entities.balance", selector: { entity: { domain: "number" } } },
-            { name: "settings_entities.speakers_a", selector: { entity: { domain: "switch" } } },
-            { name: "settings_entities.speakers_b", selector: { entity: { domain: "switch" } } },
-            { name: "settings_entities.dimmer", selector: { entity: { domain: "select" } } },
-            { name: "settings_entities.tone_bypass", selector: { entity: { domain: "switch" } } },
         ];
+        if (showSettings) {
+            schema.push({ name: "settings_entities.bass", selector: { entity: { domain: "number" } } }, { name: "settings_entities.treble", selector: { entity: { domain: "number" } } }, { name: "settings_entities.balance", selector: { entity: { domain: "number" } } }, { name: "settings_entities.speakers_a", selector: { entity: { domain: "switch" } } }, { name: "settings_entities.speakers_b", selector: { entity: { domain: "switch" } } }, { name: "settings_entities.dimmer", selector: { entity: { domain: "select" } } }, { name: "settings_entities.tone_bypass", selector: { entity: { domain: "switch" } } });
+        }
         return b `
       <ha-form
         .hass=${this.hass}
