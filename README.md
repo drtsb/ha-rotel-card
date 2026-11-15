@@ -69,7 +69,11 @@ bass_entity: number.rotel_bass
 treble_entity: number.rotel_treble
 speakers_a_entity: switch.rotel_speakers_a
 speakers_b_entity: switch.rotel_speakers_b
-dimmer_entity: select.rotel_display_dimmer
+  dimmer_entity: select.rotel_display_dimmer
+  theme_variables:
+    "--rotel-bg": "linear-gradient(145deg, #2a2a2a, #000000)"
+    "--rotel-accent": "#e0c050"
+    "--rotel-button-color": "#3a3a3a"
 ```
 
 ## Configuration Options
@@ -87,6 +91,7 @@ dimmer_entity: select.rotel_display_dimmer
 | `dimmer_entity` | `string` | No | Display dimmer control (`select`/`number`) |
 | `hide_name` | `boolean` | No | Hide the card header (`true`/`false`) |
 | `compact` | `boolean` | No | Compact display mode (`true`/`false`) |
+| `theme_variables` | `object` | No | Custom CSS variables applied as inline styles on the root `<ha-card>` element. Keys are CSS variable names (e.g. `--rotel-bg`, `--rotel-text`, `--rotel-button-color`), values are arbitrary CSS values. Example: `theme_variables: { "--rotel-bg": "#1a1a1a", "--rotel-text": "#e0e0e0" }` |
 
 > The exact set of available entities depends on your [ha-rotel-integration](https://github.com/drtsb/ha-rotel-integration) installation. The card only subscribes to entities explicitly defined in the configuration.
 
