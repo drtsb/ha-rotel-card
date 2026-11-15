@@ -1,5 +1,7 @@
 # Rotel Card for Home Assistant
 
+[![Created by AI](https://img.shields.io/badge/Created_by-AI-8A2BE2.svg)](https://github.com/drtsb/ha-rotel-card)
+[![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg)]()
 [![Active Installations](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=Active%20Installs&query=%24.rotel.total&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json)](https://analytics.home-assistant.io/integrations/)
 [![GitHub All Releases](https://img.shields.io/github/downloads/drtsb/ha-rotel-card/total?color=2ea44f&logo=github&label=Downloads)](https://github.com/drtsb/ha-rotel-card/releases)
 [![GitHub Release](https://img.shields.io/github/v/release/drtsb/ha-rotel-card?color=blue&logo=github)](https://github.com/drtsb/ha-rotel-card/releases/latest)
@@ -27,6 +29,11 @@ Inspired by the clean, minimal aesthetic of Hi-Fi equipment with a focus on volu
 - **Display Dimmer** control (if supported by the integration)
 - Automatic volume slider lock when **Fixed Volume / Pass-Through** is active
 - Optimized rendering with minimal flicker
+- Built-in **Visual Editor** for card setup through the Home Assistant UI
+- Four built-in color themes (**Silver**, **Black**, **Champagne**, **Minimal**) plus support for custom CSS variables (`theme_variables`)
+- Smart handling of fixed-volume sources (volume slider is automatically disabled)
+- Slide-out panel with additional settings (**Bass**, **Treble**, **Balance**) that can be hidden (`show_settings`)
+- Covered by unit tests (**Vitest**) with a configured **CI/CD** pipeline
 
 ## Installation
 
@@ -64,16 +71,19 @@ entity: media_player.rotel_amplifier
 type: custom:rotel-card
 entity: media_player.rotel_amplifier
 name: Rotel RA/RC
+theme: silver
+show_settings: true
 tone_bypass_entity: switch.rotel_tone_bypass
 bass_entity: number.rotel_bass
 treble_entity: number.rotel_treble
+balance_entity: number.rotel_balance
 speakers_a_entity: switch.rotel_speakers_a
 speakers_b_entity: switch.rotel_speakers_b
-  dimmer_entity: select.rotel_display_dimmer
-  theme_variables:
-    "--rotel-bg": "linear-gradient(145deg, #2a2a2a, #000000)"
-    "--rotel-accent": "#e0c050"
-    "--rotel-button-color": "#3a3a3a"
+dimmer_entity: select.rotel_display_dimmer
+theme_variables:
+  "--rotel-bg": "linear-gradient(145deg, #2a2a2a, #000000)"
+  "--rotel-accent": "#e0c050"
+  "--rotel-button-color": "#3a3a3a"
 ```
 
 ## Configuration Options
@@ -83,9 +93,12 @@ speakers_b_entity: switch.rotel_speakers_b
 | `type` | `string` | Yes | Must be `custom:rotel-card` |
 | `entity` | `string` | Yes | Main `media_player` entity for your Rotel amplifier (e.g., `media_player.rotel_amplifier`) |
 | `name` | `string` | No | Custom card title. Defaults to the entity's `friendly_name` |
+| `theme` | `string` | No | Built-in theme preset: `silver` (default), `black`, `champagne`, `minimal` |
+| `show_settings` | `boolean` | No | Show/hide the slide-out additional settings panel (`true`/`false`, default `true`) |
 | `tone_bypass_entity` | `string` | No | Entity for Tone Bypass control (`switch`/`binary_sensor` depending on integration) |
 | `bass_entity` | `string` | No | Entity for Bass adjustment (`number`/`select`) |
 | `treble_entity` | `string` | No | Entity for Treble adjustment (`number`/`select`) |
+| `balance_entity` | `string` | No | Entity for Balance adjustment (`number`/`select`) |
 | `speakers_a_entity` | `string` | No | Speakers A control (`switch`) |
 | `speakers_b_entity` | `string` | No | Speakers B control (`switch`) |
 | `dimmer_entity` | `string` | No | Display dimmer control (`select`/`number`) |
