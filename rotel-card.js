@@ -93,8 +93,7 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
     _call(service, data = {}) {
         this.hass.callService("media_player", service, { entity_id: this._config.entity, ...data });
     }
-    _turnOn() { this._call("turn_on"); }
-    _turnOff() { this._call("turn_off"); }
+    _togglePower() { this._call("toggle"); }
     _volumeUp() { this._call("volume_up"); }
     _volumeDown() { this._call("volume_down"); }
     _mute() {
@@ -116,13 +115,23 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         const source = attrs.source ?? "—";
         const sources = attrs.source_list ?? [];
         const muted = !!attrs.is_volume_muted;
-        const on = state !== "off" && state !== "standby";
+        const on = state !== "off" && state !== "standby" && state !== "unavailable";
+        const model = this._config.model || attrs.model || attrs.device_model || attrs.friendly_name || "";
         return b `
       <ha-card>
         <div class="wrap">
           <div class="header">
-            <span class="brand">ROTEL</span>
-            <span class="status ${on ? "on" : "off"}">${state.toUpperCase()}</span>
+            <div class="brand-group">
+              <span class="brand">ROTEL</span>
+              ${model ? b `<span class="model">${model}</span>` : ""}
+            </div>
+            <ha-icon-button
+              class="power ${on ? "on" : "off"}"
+              .label=${on ? "Power off" : "Power on"}
+              @click=${this._togglePower}
+            >
+              <ha-icon icon="mdi:power"></ha-icon>
+            </ha-icon-button>
           </div>
           <div class="volume">
             <div class="vnum">${Math.round(volume * 100)}</div>
@@ -131,10 +140,15 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
               @input=${this._setVolume} />
           </div>
           <div class="controls">
-            <button @click=${this._volumeDown}>−</button>
-            <button @click=${this._mute}>${muted ? "UNMUTE" : "MUTE"}</button>
-            <button @click=${this._volumeUp}>+</button>
-            <button @click=${on ? this._turnOff : this._turnOn}>${on ? "POWER OFF" : "POWER ON"}</button>
+            <ha-icon-button class="vol" .label=${"Volume down"} @click=${this._volumeDown}>
+              <ha-icon icon="mdi:volume-minus"></ha-icon>
+            </ha-icon-button>
+            <ha-icon-button class="vol mute" .label=${muted ? "Unmute" : "Mute"} @click=${this._mute}>
+              <ha-icon icon=${muted ? "mdi:volume-off" : "mdi:volume-high"}></ha-icon>
+            </ha-icon-button>
+            <ha-icon-button class="vol" .label=${"Volume up"} @click=${this._volumeUp}>
+              <ha-icon icon="mdi:volume-plus"></ha-icon>
+            </ha-icon-button>
           </div>
           <div class="source">
             <div class="src-label">SOURCE: ${source}</div>
@@ -160,14 +174,22 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
       .wrap { display: flex; flex-direction: column; gap: 12px; }
       .header { display: flex; justify-content: space-between; align-items: center; }
       .brand { font-size: 20px; font-weight: 700; letter-spacing: 4px; color: #c9a227; }
-      .status { font-size: 12px; padding: 2px 8px; border-radius: 4px; }
-      .status.on { background: #1b5e20; color: #a5d6a7; }
-      .status.off { background: #424242; color: #bdbdbd; }
+      .brand-group { display: flex; align-items: baseline; gap: 10px; }
+      .model { font-size: 12px; letter-spacing: 1px; color: #888; }
+      ha-icon-button {
+        --mdc-icon-button-size: 40px;
+        --mdc-icon-size: 22px;
+        color: #cfcfcf;
+      }
+      ha-icon-button ha-icon { width: 22px; height: 22px; }
+      ha-icon-button:hover { color: #fff; }
+      ha-icon-button.power.on ha-icon { color: var(--success-color, green); }
+      ha-icon-button.power.off ha-icon { color: var(--error-color, red); }
       .volume { text-align: center; }
       .vnum { font-size: 48px; font-weight: 300; color: #c9a227; }
       .vlabel { font-size: 11px; letter-spacing: 2px; color: #888; }
       input[type=range] { width: 100%; }
-      .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+      .controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
       button { background: #2a2a2a; color: #e0e0e0; border: 1px solid #444; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
       button.active { background: #c9a227; color: #000; }
       .source { }
