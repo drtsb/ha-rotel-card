@@ -6,6 +6,8 @@ import {
 
 import "./rotel-card-editor";
 
+type ThemePreset = "silver" | "black" | "champagne" | "minimal";
+
 interface RotelCardConfig {
   type: string;
   entity: string;
@@ -16,7 +18,8 @@ interface RotelCardConfig {
   show_inputs?: boolean;
   show_settings?: boolean;
   hide_volume?: boolean;
-  theme_variables?: Record<string, string>;
+  theme?: ThemePreset;
+  custom_theme_vars?: Record<string, string>;
   settings_entities?: {
     bass?: string;
     treble?: string;
@@ -57,9 +60,17 @@ export class RotelAmplifierCard extends LitElement {
   /** Debounce timers for settings sliders */
   private _settingsDebounceTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
 
+  /** Apply theme preset as data-theme attribute on host */
+  private _applyThemePreset(): void {
+    const theme = this._config?.theme ?? "silver";
+    this.setAttribute("data-theme", theme);
+  }
+
   public setConfig(config: RotelCardConfig): void {
     if (!config.entity) throw new Error("entity is required");
     this._config = config;
+    // Apply theme immediately on config change (before first render)
+    this._applyThemePreset();
   }
 
   public getCardSize(): number {
@@ -77,14 +88,14 @@ export class RotelAmplifierCard extends LitElement {
   }
 
   /**
-   * Maps config.theme_variables to inline CSS custom properties on the
+   * Maps config.custom_theme_vars to inline CSS custom properties on the
    * root <ha-card> element so users can theme the card via YAML without
    * touching the source code.
    */
   public applyThemeVariables(): void {
     const card = this.shadowRoot?.querySelector("ha-card") as HTMLElement | null;
     if (!card) return;
-    const variables = this._config?.theme_variables;
+    const variables = this._config?.custom_theme_vars;
     if (!variables || typeof variables !== "object") return;
     for (const [name, value] of Object.entries(variables)) {
       card.style.setProperty(name, String(value));
@@ -101,7 +112,22 @@ export class RotelAmplifierCard extends LitElement {
 
   protected updated(changed: PropertyValues): void {
     super.updated(changed);
-    if (changed.has("_config")) this.applyThemeVariables();
+    if (changed.has("_config")) {
+      this._applyThemePreset();
+      this.applyThemeVariables();
+    }
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._sourceSelectTimer) {
+      clearTimeout(this._sourceSelectTimer);
+      this._sourceSelectTimer = null;
+    }
+    for (const timer of this._settingsDebounceTimers.values()) {
+      clearTimeout(timer);
+    }
+    this._settingsDebounceTimers.clear();
   }
 
   private get _entity() {
@@ -124,8 +150,6 @@ export class RotelAmplifierCard extends LitElement {
     this._call("volume_mute", { is_volume_muted: !muted });
   }
   private _selectSource(source: string) {
-    if (this._fixedVolume) return;
-
     // Debounce: ignore rapid clicks within 300ms
     if (this._sourceSelectTimer) {
       clearTimeout(this._sourceSelectTimer);
@@ -138,7 +162,7 @@ export class RotelAmplifierCard extends LitElement {
   private _setVolume(e: Event) {
     if (this._fixedVolume) return;
     const v = parseFloat((e.target as HTMLInputElement).value);
-    this._call("volume_set", { volume_level: v });
+    this._call("volume_set", { volume_level: v / 96 });
   }
 
   /** Debounce helper for settings changes */
@@ -225,9 +249,9 @@ export class RotelAmplifierCard extends LitElement {
             </ha-icon-button>
           </div>
           <div class="volume">
-            <div class="vnum">${Math.round(volume * 100)}</div>
+            <div class="vnum">${Math.round(volume * 96)}</div>
             <div class="vlabel">VOLUME</div>
-            <input type="range" min="0" max="1" step="0.01" .value=${String(volume)}
+            <input type="range" min="0" max="96" step="1" .value=${String(Math.round(volume * 96))}
               ?disabled=${fixedVolume} @input=${this._setVolume} />
           </div>
           <div class="controls">
@@ -250,7 +274,6 @@ export class RotelAmplifierCard extends LitElement {
                     <div class="source-led" aria-hidden="true"></div>
                     <button
                       class="rotel-btn"
-                      ?disabled=${fixedVolume}
                       aria-label=${`Select source ${s}`}
                       @click=${() => this._selectSource(s)}
                     ></button>
@@ -362,10 +385,77 @@ export class RotelAmplifierCard extends LitElement {
   static get styles() {
     return css`
       :host { display: block; }
+
+      /* Theme presets via data-theme attribute */
+      :host([data-theme="silver"]) {
+        --rotel-bg: linear-gradient(145deg, #e8e8e8, #d0d0d0);
+        --rotel-text: #1a1a1a;
+        --rotel-text-muted: #555;
+        --rotel-border: #bbb;
+        --rotel-accent: #c9a227;
+        --rotel-display-text: #c9a227;
+        --rotel-button-color: #f0f0f0;
+        --rotel-border-button: #ccc;
+        --rotel-icon-color: #333;
+        --rotel-display-bg: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+        --rotel-panel-bg: linear-gradient(135deg, #d4d4d4 0%, #b8b8b8 100%);
+        --rotel-panel-text: #333;
+        --rotel-settings-bg: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
+        --rotel-settings-border: #bbb;
+      }
+      :host([data-theme="black"]) {
+        --rotel-bg: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+        --rotel-text: #e0e0e0;
+        --rotel-text-muted: #888;
+        --rotel-border: #333;
+        --rotel-accent: #c9a227;
+        --rotel-display-text: #c9a227;
+        --rotel-button-color: #2a2a2a;
+        --rotel-border-button: #444;
+        --rotel-icon-color: #cfcfcf;
+        --rotel-display-bg: transparent;
+        --rotel-panel-bg: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+        --rotel-panel-text: #e0e0e0;
+        --rotel-settings-bg: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+        --rotel-settings-border: #333;
+      }
+      :host([data-theme="champagne"]) {
+        --rotel-bg: linear-gradient(145deg, #f5e6d3, #e8d4bc);
+        --rotel-text: #2d2520;
+        --rotel-text-muted: #6b5b4f;
+        --rotel-border: #d4c4b0;
+        --rotel-accent: #b8860b;
+        --rotel-display-text: #b8860b;
+        --rotel-button-color: #f0e0d0;
+        --rotel-border-button: #d4c4b0;
+        --rotel-icon-color: #4a3c30;
+        --rotel-display-bg: linear-gradient(135deg, #faf0e6, #f0e0d0);
+        --rotel-panel-bg: linear-gradient(135deg, #e8d4bc 0%, #dcc0a8 100%);
+        --rotel-panel-text: #2d2520;
+        --rotel-settings-bg: linear-gradient(135deg, #f5e6d3 0%, #e8d4bc 100%);
+        --rotel-settings-border: #d4c4b0;
+      }
+      :host([data-theme="minimal"]) {
+        --rotel-bg: var(--card-background-color, #ffffff);
+        --rotel-text: var(--primary-text-color, #212121);
+        --rotel-text-muted: var(--secondary-text-color, #757575);
+        --rotel-border: var(--divider-color, #e0e0e0);
+        --rotel-accent: var(--primary-color, #1976d2);
+        --rotel-display-text: var(--primary-color, #1976d2);
+        --rotel-button-color: var(--card-background-color, #ffffff);
+        --rotel-border-button: var(--divider-color, #e0e0e0);
+        --rotel-icon-color: var(--primary-text-color, #212121);
+        --rotel-display-bg: transparent;
+        --rotel-panel-bg: var(--card-background-color, #ffffff);
+        --rotel-panel-text: var(--primary-text-color, #212121);
+        --rotel-settings-bg: var(--card-background-color, #ffffff);
+        --rotel-settings-border: var(--divider-color, #e0e0e0);
+      }
+
       ha-card {
-        background: var(--rotel-bg, linear-gradient(145deg, #1a1a1a, #0d0d0d));
-        color: var(--rotel-text, var(--primary-text-color, #e0e0e0));
-        border: 1px solid var(--rotel-border, #333);
+        background: var(--rotel-bg);
+        color: var(--rotel-text);
+        border: 1px solid var(--rotel-border);
         border-radius: 12px;
         padding: 16px;
         font-family: "Roboto", sans-serif;
@@ -398,7 +488,7 @@ export class RotelAmplifierCard extends LitElement {
 
       /* Rotel-style source selector panel */
       .rotel-panel {
-        background: linear-gradient(135deg, #d4d4d4 0%, #b8b8b8 100%);
+        background: var(--rotel-panel-bg, linear-gradient(135deg, #d4d4d4 0%, #b8b8b8 100%));
         padding: 1.5rem;
         border-radius: var(--ha-card-border-radius, 12px);
         box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8),
@@ -421,7 +511,7 @@ export class RotelAmplifierCard extends LitElement {
         font-family: 'Arial', sans-serif;
         font-size: 0.625rem;
         font-weight: 700;
-        color: #333;
+        color: var(--rotel-panel-text, #333);
         text-transform: uppercase;
         letter-spacing: 0.5px;
         text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
@@ -430,7 +520,7 @@ export class RotelAmplifierCard extends LitElement {
         width: 0.375rem;
         height: 0.375rem;
         border-radius: 50%;
-        background: #2a2a2a;
+        background: var(--rotel-text-muted, #2a2a2a);
         box-shadow: inset 0 1px 2px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.4);
         transition: all 0.3s ease;
       }
@@ -446,7 +536,7 @@ export class RotelAmplifierCard extends LitElement {
         border: none;
         outline: none;
         cursor: pointer;
-        background: linear-gradient(135deg, #fdfdfd 0%, #c3c3c3 100%);
+        background: var(--rotel-button-color, linear-gradient(135deg, #fdfdfd 0%, #c3c3c3 100%));
         box-shadow: 0 0.25rem 0.3125rem rgba(0,0,0,0.3), inset 0 0.125rem 0.1875rem rgba(255,255,255,0.9), inset 0 -0.125rem 0.1875rem rgba(0,0,0,0.2);
         transition: transform 0.05s ease, box-shadow 0.05s ease;
       }
@@ -458,7 +548,7 @@ export class RotelAmplifierCard extends LitElement {
         right: -0.1875rem;
         bottom: -0.1875rem;
         border-radius: 50%;
-        background: linear-gradient(135deg, #999 0%, #e6e6e6 100%);
+        background: var(--rotel-border-button, linear-gradient(135deg, #999 0%, #e6e6e6 100%));
         z-index: -1;
         box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.8);
       }
@@ -483,8 +573,8 @@ export class RotelAmplifierCard extends LitElement {
 
       /* Settings panel */
       .settings-panel {
-        background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
-        border: 1px solid var(--rotel-border, #333);
+        background: var(--rotel-settings-bg, linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%));
+        border: 1px solid var(--rotel-settings-border, var(--rotel-border, #333));
         border-radius: var(--ha-card-border-radius, 12px);
         padding: 1rem;
         margin-top: 0.5rem;

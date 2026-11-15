@@ -287,9 +287,9 @@ describe("rotel-amplifier-card", () => {
     expect(cssText).toMatch(/input\[type=range\]\[disabled\]/);
   });
 
-  it("applies theme_variables as inline styles on the root ha-card", async () => {
+  it("applies custom_theme_vars as inline styles on the root ha-card", async () => {
     const { card } = await createCard({
-      theme_variables: { "--rotel-bg": "#111111", "--rotel-text": "#ffffff", "--rotel-button-color": "#444444" },
+      custom_theme_vars: { "--rotel-bg": "#111111", "--rotel-text": "#ffffff", "--rotel-button-color": "#444444" },
     });
 
     const haCard = query<HTMLElement>(card, "ha-card");
@@ -298,22 +298,86 @@ describe("rotel-amplifier-card", () => {
     expect(haCard.style.getPropertyValue("--rotel-button-color")).toBe("#444444");
   });
 
-  it("re-applies theme_variables when applyThemeVariables is called explicitly", async () => {
-    const { card } = await createCard({ theme_variables: { "--rotel-text": "#aaaaaa" } });
+  it("re-applies custom_theme_vars when applyThemeVariables is called explicitly", async () => {
+    const { card } = await createCard({ custom_theme_vars: { "--rotel-text": "#aaaaaa" } });
 
     const haCard = query<HTMLElement>(card, "ha-card");
     expect(haCard.style.getPropertyValue("--rotel-text")).toBe("#aaaaaa");
 
-    card.setConfig({ type: "custom:rotel-amplifier-card", entity: ENTITY, theme_variables: { "--rotel-text": "#00ff00" } });
+    card.setConfig({ type: "custom:rotel-amplifier-card", entity: ENTITY, custom_theme_vars: { "--rotel-text": "#00ff00" } });
     card.applyThemeVariables();
     expect(haCard.style.getPropertyValue("--rotel-text")).toBe("#00ff00");
   });
 
-  it("leaves the ha-card inline style empty when theme_variables is not configured", async () => {
+  it("leaves the ha-card inline style empty when custom_theme_vars is not configured", async () => {
     const { card } = await createCard();
 
     const haCard = query<HTMLElement>(card, "ha-card");
     expect(haCard.style.length).toBe(0);
+  });
+
+  it("applies theme preset 'silver' by default via data-theme attribute", async () => {
+    const { card } = await createCard();
+
+    expect(card.getAttribute("data-theme")).toBe("silver");
+  });
+
+  it("applies theme preset 'black' when configured", async () => {
+    const { card } = await createCard({ theme: "black" });
+
+    expect(card.getAttribute("data-theme")).toBe("black");
+  });
+
+  it("applies theme preset 'champagne' when configured", async () => {
+    const { card } = await createCard({ theme: "champagne" });
+
+    expect(card.getAttribute("data-theme")).toBe("champagne");
+  });
+
+  it("applies theme preset 'minimal' when configured", async () => {
+    const { card } = await createCard({ theme: "minimal" });
+
+    expect(card.getAttribute("data-theme")).toBe("minimal");
+  });
+
+  it("does not disable source selection when fixed volume is active", async () => {
+    vi.useFakeTimers();
+    const { card, callService } = await createCard({}, { fixed_volume: true });
+
+    const cdButton = Array.from(queryAll<HTMLButtonElement>(card, ".rotel-btn")).find(
+      (btn) => btn.closest(".source-item")?.querySelector(".source-label")?.textContent?.trim() === "CD",
+    );
+    expect(cdButton).toBeDefined();
+    expect(cdButton!.hasAttribute("disabled")).toBe(false);
+
+    cdButton!.click();
+    await vi.advanceTimersByTimeAsync(300);
+    expect(callService).toHaveBeenCalledWith("media_player", "select_source", {
+      entity_id: ENTITY,
+      source: "CD",
+    });
+    vi.useRealTimers();
+  });
+
+  it("displays volume in 0-96 Rotel scale", async () => {
+    const { card } = await createCard({}, { volume_level: 0.5 });
+
+    const vnum = query(card, ".vnum");
+    expect(vnum.textContent?.trim()).toBe("48");
+  });
+
+  it("sends volume_set with 0-1 scale when slider changed", async () => {
+    const { card, callService } = await createCard();
+
+    const slider = query<HTMLInputElement>(card, 'input[type="range"]');
+    slider.value = "48";
+    slider.dispatchEvent(new Event("input", { bubbles: true }));
+    await card.updateComplete;
+
+    expect(callService).toHaveBeenCalledWith("media_player", "volume_set", {
+      entity_id: ENTITY,
+      volume_level: 0.5,
+    });
   });
 
   it("does not render settings panel when show_settings is false", async () => {
