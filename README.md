@@ -6,7 +6,7 @@
 [![GitHub All Releases](https://img.shields.io/github/downloads/drtsb/ha-rotel-card/total?color=2ea44f&logo=github&label=Downloads)](https://github.com/drtsb/ha-rotel-card/releases)
 [![GitHub Release](https://img.shields.io/github/v/release/drtsb/ha-rotel-card?color=blue&logo=github)](https://github.com/drtsb/ha-rotel-card/releases/latest)
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
-[![CI](https://github.com/drtsb/ha-rotel-card/actions/workflows/ci.yml/badge.svg)](https://github.com/drtsb/ha-rotel-card/actions/workflows/ci.yml)
+[![CI](https://github.com/drtsb/ha-rotel-card/actions/workflows/ci-coverage.yml/badge.svg)](https://github.com/drtsb/ha-rotel-card/actions/workflows/ci-coverage.yml)
 [![License](https://img.shields.io/github/license/drtsb/ha-rotel-card?color=lightgrey)](LICENSE)
 
 A custom Lovelace card for controlling **Rotel** amplifiers through the [ha-rotel-integration](https://github.com/drtsb/ha-rotel-integration) in Home Assistant.
