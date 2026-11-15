@@ -95,6 +95,13 @@ let RotelCardEditor = class RotelCardEditor extends i {
             { name: "model", selector: { text: {} } },
             { name: "show_settings", selector: { boolean: {} } },
             { name: "hide_volume", selector: { boolean: {} } },
+            { name: "settings_entities.bass", selector: { entity: { domain: "number" } } },
+            { name: "settings_entities.treble", selector: { entity: { domain: "number" } } },
+            { name: "settings_entities.balance", selector: { entity: { domain: "number" } } },
+            { name: "settings_entities.speakers_a", selector: { entity: { domain: "switch" } } },
+            { name: "settings_entities.speakers_b", selector: { entity: { domain: "switch" } } },
+            { name: "settings_entities.dimmer", selector: { entity: { domain: "select" } } },
+            { name: "settings_entities.tone_bypass", selector: { entity: { domain: "switch" } } },
         ];
         return b `
       <ha-form
@@ -150,6 +157,8 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         super(...arguments);
         /** Debounce timer for source selection to avoid spamming HA */
         this._sourceSelectTimer = null;
+        /** Debounce timers for settings sliders */
+        this._settingsDebounceTimers = new Map();
     }
     setConfig(config) {
         if (!config.entity)
@@ -157,7 +166,14 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         this._config = config;
     }
     getCardSize() {
-        return 4;
+        // Base size + settings panel (approx 2 rows) if enabled and entities configured
+        const baseSize = 4;
+        if (this._config?.show_settings && this._config?.settings_entities) {
+            const entityCount = Object.values(this._config.settings_entities).filter(Boolean).length;
+            if (entityCount > 0)
+                return baseSize + Math.ceil(entityCount / 3) + 1;
+        }
+        return baseSize;
     }
     static getConfigElement() {
         return document.createElement("rotel-card-editor");
@@ -223,6 +239,34 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         const v = parseFloat(e.target.value);
         this._call("volume_set", { volume_level: v });
     }
+    /** Debounce helper for settings changes */
+    _debounceSetting(entityId, callback, delay = 300) {
+        const existing = this._settingsDebounceTimers.get(entityId);
+        if (existing)
+            clearTimeout(existing);
+        const timer = setTimeout(() => {
+            callback();
+            this._settingsDebounceTimers.delete(entityId);
+        }, delay);
+        this._settingsDebounceTimers.set(entityId, timer);
+    }
+    _callSettingsService(domain, service, entityId, data = {}) {
+        this.hass.callService(domain, service, { entity_id: entityId, ...data });
+    }
+    _handleNumberChange(entityId, e) {
+        const value = parseFloat(e.target.value);
+        this._debounceSetting(entityId, () => {
+            this._callSettingsService("number", "set_value", entityId, { value });
+        });
+    }
+    _handleSwitchChange(entityId, e) {
+        const checked = e.target.checked;
+        this._callSettingsService("switch", checked ? "turn_on" : "turn_off", entityId);
+    }
+    _handleSelectChange(entityId, e) {
+        const value = e.target.value;
+        this._callSettingsService("select", "select_option", entityId, { option: value });
+    }
     render() {
         if (!this._config || !this.hass)
             return b ``;
@@ -236,6 +280,22 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         const on = state !== "off" && state !== "standby" && state !== "unavailable";
         const fixedVolume = this._fixedVolume;
         const model = this._config.model || attrs.model || attrs.device_model || attrs.friendly_name || "";
+        const settingsEntities = this._config.settings_entities ?? {};
+        const showSettings = this._config.show_settings === true;
+        // Fetch settings entity states
+        const bassState = settingsEntities.bass ? this.hass.states[settingsEntities.bass] : null;
+        const trebleState = settingsEntities.treble ? this.hass.states[settingsEntities.treble] : null;
+        const balanceState = settingsEntities.balance ? this.hass.states[settingsEntities.balance] : null;
+        const speakersAState = settingsEntities.speakers_a ? this.hass.states[settingsEntities.speakers_a] : null;
+        const speakersBState = settingsEntities.speakers_b ? this.hass.states[settingsEntities.speakers_b] : null;
+        const dimmerState = settingsEntities.dimmer ? this.hass.states[settingsEntities.dimmer] : null;
+        const toneBypassState = settingsEntities.tone_bypass ? this.hass.states[settingsEntities.tone_bypass] : null;
+        // Check if any settings entities are actually configured and available
+        const configuredSettings = [
+            bassState, trebleState, balanceState,
+            speakersAState, speakersBState, toneBypassState, dimmerState
+        ].filter(Boolean);
+        const hasSettingsToShow = showSettings && configuredSettings.length > 0;
         // Limit to 12 sources (2 rows × 6 columns) as per the CSS grid
         const displaySources = sources.slice(0, 12);
         const hasMoreSources = sources.length > 12;
@@ -293,8 +353,84 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
               </div>
             ` : ""}
           </div>
+          ${hasSettingsToShow ? b `
+            <div class="settings-panel">
+              <div class="settings-header">
+                <span class="settings-title">SETTINGS</span>
+              </div>
+              <div class="settings-grid">
+                ${this._renderNumberSetting("BASS", bassState, settingsEntities.bass)}
+                ${this._renderNumberSetting("TREBLE", trebleState, settingsEntities.treble)}
+                ${this._renderNumberSetting("BALANCE", balanceState, settingsEntities.balance)}
+                ${this._renderSwitchSetting("SPEAKERS A", speakersAState, settingsEntities.speakers_a)}
+                ${this._renderSwitchSetting("SPEAKERS B", speakersBState, settingsEntities.speakers_b)}
+                ${this._renderSwitchSetting("TONE BYPASS", toneBypassState, settingsEntities.tone_bypass)}
+                ${this._renderSelectSetting("DIMMER", dimmerState, settingsEntities.dimmer)}
+              </div>
+            </div>
+          ` : ""}
         </div>
       </ha-card>
+    `;
+    }
+    _renderNumberSetting(label, stateObj, entityId) {
+        if (!stateObj || !entityId)
+            return b ``;
+        const unavailable = stateObj.state === "unavailable" || stateObj.state === "unknown";
+        const value = Number(stateObj.state);
+        const min = Number(stateObj.attributes.min) ?? -10;
+        const max = Number(stateObj.attributes.max) ?? 10;
+        const step = Number(stateObj.attributes.step) ?? 1;
+        return b `
+      <div class="setting-item ${unavailable ? "unavailable" : ""}">
+        <div class="setting-label">${label}</div>
+        <div class="setting-value">${unavailable ? "—" : stateObj.state}</div>
+        <ha-slider
+          min=${min}
+          max=${max}
+          step=${step}
+          .value=${value}
+          pin
+          ?disabled=${unavailable}
+          @change=${(e) => this._handleNumberChange(entityId, e)}
+        ></ha-slider>
+      </div>
+    `;
+    }
+    _renderSwitchSetting(label, stateObj, entityId) {
+        if (!stateObj || !entityId)
+            return b ``;
+        const unavailable = stateObj.state === "unavailable" || stateObj.state === "unknown";
+        return b `
+      <div class="setting-item switch-item ${unavailable ? "unavailable" : ""}">
+        <div class="setting-label">${label}</div>
+        <ha-switch
+          .checked=${stateObj.state === "on"}
+          ?disabled=${unavailable}
+          @change=${(e) => this._handleSwitchChange(entityId, e)}
+        ></ha-switch>
+      </div>
+    `;
+    }
+    _renderSelectSetting(label, stateObj, entityId) {
+        if (!stateObj || !entityId)
+            return b ``;
+        const unavailable = stateObj.state === "unavailable" || stateObj.state === "unknown";
+        const options = stateObj.attributes.options ?? [];
+        return b `
+      <div class="setting-item ${unavailable ? "unavailable" : ""}">
+        <div class="setting-label">${label}</div>
+        <div class="setting-value">${unavailable ? "—" : stateObj.state}</div>
+        <ha-select
+          .value=${stateObj.state}
+          ?disabled=${unavailable}
+          @change=${(e) => this._handleSelectChange(entityId, e)}
+        >
+          ${options.map((opt) => b `
+            <mwc-list-item .value=${opt}>${opt}</mwc-list-item>
+          `)}
+        </ha-select>
+      </div>
     `;
     }
     static get styles() {
@@ -416,6 +552,78 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         margin-top: 1rem;
         text-align: center;
         font-size: 0.75rem;
+        color: var(--rotel-text-muted, var(--secondary-text-color, #888));
+      }
+
+      /* Settings panel */
+      .settings-panel {
+        background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+        border: 1px solid var(--rotel-border, #333);
+        border-radius: var(--ha-card-border-radius, 12px);
+        padding: 1rem;
+        margin-top: 0.5rem;
+      }
+      .settings-header {
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--rotel-border, #333);
+      }
+      .settings-title {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: var(--rotel-accent, #c9a227);
+        text-transform: uppercase;
+      }
+      .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+      .setting-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+      }
+      .setting-label {
+        font-size: 0.625rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--rotel-text-muted, var(--secondary-text-color, #888));
+        text-transform: uppercase;
+      }
+      .setting-value {
+        font-size: 1rem;
+        font-weight: 300;
+        color: var(--rotel-display-text, #c9a227);
+        text-align: right;
+      }
+      .setting-item > * {
+        width: 100%;
+      }
+      .switch-item {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .switch-item .setting-label {
+        margin-right: 1rem;
+      }
+      .switch-item ha-switch {
+        --mdc-theme-primary: var(--rotel-accent, #c9a227);
+      }
+      ha-slider {
+        --mdc-theme-primary: var(--rotel-accent, #c9a227);
+        --mdc-theme-secondary: var(--rotel-accent, #c9a227);
+      }
+      ha-select {
+        --mdc-theme-primary: var(--rotel-accent, #c9a227);
+      }
+      .setting-item.unavailable {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .setting-item.unavailable .setting-value {
         color: var(--rotel-text-muted, var(--secondary-text-color, #888));
       }
     `;

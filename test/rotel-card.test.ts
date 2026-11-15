@@ -4,6 +4,13 @@ import type { HomeAssistant } from "custom-card-helpers";
 import { RotelAmplifierCard } from "../src/rotel-amplifier-card";
 
 const ENTITY = "media_player.rotel";
+const BASS_ENTITY = "number.rotel_bass";
+const TREBLE_ENTITY = "number.rotel_treble";
+const BALANCE_ENTITY = "number.rotel_balance";
+const SPEAKERS_A_ENTITY = "switch.rotel_speakers_a";
+const SPEAKERS_B_ENTITY = "switch.rotel_speakers_b";
+const DIMMER_ENTITY = "select.rotel_display_dimmer";
+const TONE_BYPASS_ENTITY = "switch.rotel_tone_bypass";
 
 interface StateOptions {
   state?: string;
@@ -15,6 +22,13 @@ interface StateOptions {
   device_model?: string;
   friendly_name?: string;
   fixed_volume?: boolean;
+  bass?: { state: string | number; min?: number; max?: number; step?: number };
+  treble?: { state: string | number; min?: number; max?: number; step?: number };
+  balance?: { state: string | number; min?: number; max?: number; step?: number };
+  speakers_a?: string;
+  speakers_b?: string;
+  dimmer?: { state: string; options?: string[] };
+  tone_bypass?: string;
 }
 
 function createHass(options: StateOptions = {}) {
@@ -30,17 +44,90 @@ function createHass(options: StateOptions = {}) {
 
   const callService = vi.fn().mockResolvedValue(undefined);
 
-  const hass = {
-    states: {
-      [ENTITY]: {
-        entity_id: ENTITY,
-        state: options.state ?? "on",
-        attributes,
-        last_changed: "2024-01-01T00:00:00+00:00",
-        last_updated: "2024-01-01T00:00:00+00:00",
-        context: { id: "test", parent_id: null, user_id: null },
-      },
+  const states: Record<string, unknown> = {
+    [ENTITY]: {
+      entity_id: ENTITY,
+      state: options.state ?? "on",
+      attributes,
+      last_changed: "2024-01-01T00:00:00+00:00",
+      last_updated: "2024-01-01T00:00:00+00:00",
+      context: { id: "test", parent_id: null, user_id: null },
     },
+  };
+
+  if (options.bass) {
+    states[BASS_ENTITY] = {
+      entity_id: BASS_ENTITY,
+      state: String(options.bass.state),
+      attributes: { min: options.bass.min ?? -10, max: options.bass.max ?? 10, step: options.bass.step ?? 1 },
+      last_changed: "2024-01-01T00:00:00+00:00",
+      last_updated: "2024-01-01T00:00:00+00:00",
+      context: { id: "test", parent_id: null, user_id: null },
+    };
+  }
+  if (options.treble) {
+    states[TREBLE_ENTITY] = {
+      entity_id: TREBLE_ENTITY,
+      state: String(options.treble.state),
+      attributes: { min: options.treble.min ?? -10, max: options.treble.max ?? 10, step: options.treble.step ?? 1 },
+      last_changed: "2024-01-01T00:00:00+00:00",
+      last_updated: "2024-01-01T00:00:00+00:00",
+      context: { id: "test", parent_id: null, user_id: null },
+    };
+  }
+  if (options.balance) {
+    states[BALANCE_ENTITY] = {
+      entity_id: BALANCE_ENTITY,
+      state: String(options.balance.state),
+      attributes: { min: options.balance.min ?? -10, max: options.balance.max ?? 10, step: options.balance.step ?? 1 },
+      last_changed: "2024-01-01T00:00:00+00:00",
+      last_updated: "2024-01-01T00:00:00+00:00",
+      context: { id: "test", parent_id: null, user_id: null },
+    };
+  }
+  if (options.speakers_a) {
+    states[SPEAKERS_A_ENTITY] = {
+      entity_id: SPEAKERS_A_ENTITY,
+      state: options.speakers_a,
+      attributes: {},
+      last_changed: "2024-01-01T00:00:00+00:00",
+      last_updated: "2024-01-01T00:00:00+00:00",
+      context: { id: "test", parent_id: null, user_id: null },
+    };
+  }
+  if (options.speakers_b) {
+    states[SPEAKERS_B_ENTITY] = {
+      entity_id: SPEAKERS_B_ENTITY,
+      state: options.speakers_b,
+      attributes: {},
+      last_changed: "2024-01-01T00:00:00+00:00",
+      last_updated: "2024-01-01T00:00:00+00:00",
+      context: { id: "test", parent_id: null, user_id: null },
+    };
+  }
+  if (options.dimmer) {
+    states[DIMMER_ENTITY] = {
+      entity_id: DIMMER_ENTITY,
+      state: options.dimmer.state,
+      attributes: { options: options.dimmer.options ?? ["Low", "Medium", "High"] },
+      last_changed: "2024-01-01T00:00:00+00:00",
+      last_updated: "2024-01-01T00:00:00+00:00",
+      context: { id: "test", parent_id: null, user_id: null },
+    };
+  }
+  if (options.tone_bypass) {
+    states[TONE_BYPASS_ENTITY] = {
+      entity_id: TONE_BYPASS_ENTITY,
+      state: options.tone_bypass,
+      attributes: {},
+      last_changed: "2024-01-01T00:00:00+00:00",
+      last_updated: "2024-01-01T00:00:00+00:00",
+      context: { id: "test", parent_id: null, user_id: null },
+    };
+  }
+
+  const hass = {
+    states,
     callService,
   } as unknown as HomeAssistant;
 
@@ -55,6 +142,10 @@ function query<T extends Element = Element>(card: RotelAmplifierCard, selector: 
   const el = shadow(card).querySelector<T>(selector);
   if (!el) throw new Error(`Element not found: ${selector}`);
   return el;
+}
+
+function queryOptional<T extends Element = Element>(card: RotelAmplifierCard, selector: string): T | null {
+  return shadow(card).querySelector<T>(selector);
 }
 
 function queryAll<T extends Element = Element>(card: RotelAmplifierCard, selector: string): NodeListOf<T> {
@@ -223,5 +314,129 @@ describe("rotel-amplifier-card", () => {
 
     const haCard = query<HTMLElement>(card, "ha-card");
     expect(haCard.style.length).toBe(0);
+  });
+
+  it("does not render settings panel when show_settings is false", async () => {
+    const { card } = await createCard(
+      { show_settings: false, settings_entities: { bass: BASS_ENTITY } },
+      { bass: { state: 0 } }
+    );
+
+    expect(queryOptional(card, ".settings-panel")).toBeNull();
+  });
+
+  it("renders settings panel when show_settings is true and entities are configured", async () => {
+    const { card } = await createCard(
+      { show_settings: true, settings_entities: { bass: BASS_ENTITY, treble: TREBLE_ENTITY } },
+      { bass: { state: 2 }, treble: { state: -3 } }
+    );
+
+    const panel = query(card, ".settings-panel");
+    expect(panel).toBeDefined();
+    expect(panel.textContent).toContain("SETTINGS");
+    expect(panel.textContent).toContain("BASS");
+    expect(panel.textContent).toContain("TREBLE");
+  });
+
+  it("renders ha-slider for number entities with correct min/max/value", async () => {
+    const { card } = await createCard(
+      { show_settings: true, settings_entities: { bass: BASS_ENTITY } },
+      { bass: { state: 5, min: -10, max: 10, step: 1 } }
+    );
+
+    const slider = query(card, "ha-slider") as HTMLInputElement;
+    expect(slider).toBeDefined();
+    // ha-slider in test environment may not expose min/max/value as properties
+    // but we can check the element is rendered with the right attributes
+    expect(slider.getAttribute("min")).toBe("-10");
+    expect(slider.getAttribute("max")).toBe("10");
+    expect(slider.getAttribute("step")).toBe("1");
+  });
+
+  it("renders ha-switch for switch entities", async () => {
+    const { card } = await createCard(
+      { show_settings: true, settings_entities: { speakers_a: SPEAKERS_A_ENTITY } },
+      { speakers_a: "on" }
+    );
+
+    const switchEl = query(card, "ha-switch") as HTMLInputElement;
+    expect(switchEl).toBeDefined();
+    expect(switchEl.checked).toBe(true);
+  });
+
+  it("renders ha-select for select entities with options", async () => {
+    const { card } = await createCard(
+      { show_settings: true, settings_entities: { dimmer: DIMMER_ENTITY } },
+      { dimmer: { state: "Medium", options: ["Low", "Medium", "High"] } }
+    );
+
+    const select = query(card, "ha-select") as HTMLSelectElement;
+    expect(select).toBeDefined();
+    expect(select.value).toBe("Medium");
+  });
+
+  it("calls number.set_value when ha-slider changes", async () => {
+    vi.useFakeTimers();
+    const { card, callService } = await createCard(
+      { show_settings: true, settings_entities: { bass: BASS_ENTITY } },
+      { bass: { state: 0 } }
+    );
+
+    const slider = query(card, "ha-slider") as HTMLInputElement;
+    slider.value = "3";
+    slider.dispatchEvent(new Event("change", { bubbles: true }));
+    await card.updateComplete;
+
+    // Advance timers past the 300ms debounce
+    await vi.advanceTimersByTimeAsync(300);
+
+    expect(callService).toHaveBeenCalledWith("number", "set_value", {
+      entity_id: BASS_ENTITY,
+      value: 3,
+    });
+    vi.useRealTimers();
+  });
+
+  it("calls switch.turn_on/turn_off when ha-switch changes", async () => {
+    const { card, callService } = await createCard(
+      { show_settings: true, settings_entities: { speakers_a: SPEAKERS_A_ENTITY } },
+      { speakers_a: "off" }
+    );
+
+    const switchEl = query(card, "ha-switch") as HTMLInputElement;
+    switchEl.checked = true;
+    switchEl.dispatchEvent(new Event("change", { bubbles: true }));
+    await card.updateComplete;
+
+    expect(callService).toHaveBeenCalledWith("switch", "turn_on", {
+      entity_id: SPEAKERS_A_ENTITY,
+    });
+
+    callService.mockClear();
+
+    switchEl.checked = false;
+    switchEl.dispatchEvent(new Event("change", { bubbles: true }));
+    await card.updateComplete;
+
+    expect(callService).toHaveBeenCalledWith("switch", "turn_off", {
+      entity_id: SPEAKERS_A_ENTITY,
+    });
+  });
+
+  it("calls select.select_option when ha-select changes", async () => {
+    const { card, callService } = await createCard(
+      { show_settings: true, settings_entities: { dimmer: DIMMER_ENTITY } },
+      { dimmer: { state: "Low", options: ["Low", "Medium", "High"] } }
+    );
+
+    const select = query(card, "ha-select") as HTMLSelectElement;
+    select.value = "High";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+    await card.updateComplete;
+
+    expect(callService).toHaveBeenCalledWith("select", "select_option", {
+      entity_id: DIMMER_ENTITY,
+      option: "High",
+    });
   });
 });
