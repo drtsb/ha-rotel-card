@@ -11,6 +11,7 @@ interface RotelCardConfig {
   type: string;
   entity: string;
   name?: string;
+  model?: string;
   show_name?: boolean;
   show_volume?: boolean;
   show_inputs?: boolean;
@@ -70,12 +71,16 @@ export class RotelAmplifierCard extends LitElement {
     const sources = (attrs.source_list as string[]) ?? [];
     const muted = !!attrs.is_volume_muted;
     const on = state !== "off" && state !== "standby";
+    const model = this._config.model || (attrs.model as string) || (attrs.device_model as string) || (attrs.friendly_name as string) || "";
 
     return html`
       <ha-card>
         <div class="wrap">
           <div class="header">
-            <span class="brand">ROTEL</span>
+            <div class="brand-group">
+              <span class="brand">ROTEL</span>
+              ${model ? html`<span class="model">${model}</span>` : ""}
+            </div>
             <span class="status ${on ? "on" : "off"}">${state.toUpperCase()}</span>
           </div>
           <div class="volume">
