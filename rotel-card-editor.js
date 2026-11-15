@@ -74,42 +74,56 @@ const t$1=t=>(e,o)=>{ void 0!==o?o.addInitializer(()=>{customElements.define(t,e
 
 var t,r;!function(e){e.language="language",e.system="system",e.comma_decimal="comma_decimal",e.decimal_comma="decimal_comma",e.space_comma="space_comma",e.none="none";}(t||(t={})),function(e){e.language="language",e.system="system",e.am_pm="12",e.twenty_four="24";}(r||(r={}));var ne=function(e,t,r,n){n=n||{},r=null==r?{}:r;var i=new Event(t,{bubbles:void 0===n.bubbles||n.bubbles,cancelable:Boolean(n.cancelable),composed:void 0===n.composed||n.composed});return i.detail=r,e.dispatchEvent(i),i};
 
-let RotelAmplifierCardEditor = class RotelAmplifierCardEditor extends i {
-    setConfig(config) { this._config = config; }
-    _valueChanged(ev) {
+let RotelCardEditor = class RotelCardEditor extends i {
+    setConfig(config) {
+        this._config = config;
+    }
+    valueChanged(ev) {
         if (!this._config)
             return;
-        const target = ev.target;
-        const newConfig = { ...this._config, [target.configValue]: target.checked ?? target.value };
+        const value = ev.detail?.value;
+        if (!value)
+            return;
+        const newConfig = { ...this._config, ...value };
         ne(this, "config-changed", { config: newConfig });
     }
     render() {
-        if (!this._config)
+        if (!this._config || !this.hass)
             return b ``;
+        const schema = [
+            { name: "entity", selector: { entity: { domain: "media_player" } } },
+            { name: "model", selector: { text: {} } },
+            { name: "show_settings", selector: { boolean: {} } },
+            { name: "hide_volume", selector: { boolean: {} } },
+        ];
         return b `
-      <div class="card-config">
-        <ha-textfield label="Entity" .value=${this._config.entity || ""} configValue="entity" @input=${this._valueChanged}></ha-textfield>
-        <ha-textfield label="Name" .value=${this._config.name || ""} configValue="name" @input=${this._valueChanged}></ha-textfield>
-        <ha-formfield label="Show name"><ha-switch .checked=${this._config.show_name !== false} configValue="show_name" @change=${this._valueChanged}></ha-switch></ha-formfield>
-        <ha-formfield label="Show volume"><ha-switch .checked=${this._config.show_volume !== false} configValue="show_volume" @change=${this._valueChanged}></ha-switch></ha-formfield>
-        <ha-formfield label="Show inputs"><ha-switch .checked=${this._config.show_inputs !== false} configValue="show_inputs" @change=${this._valueChanged}></ha-switch></ha-formfield>
-      </div>
+      <ha-form
+        .hass=${this.hass}
+        .data=${this._config}
+        .schema=${schema}
+        @value-changed=${this.valueChanged}
+      ></ha-form>
     `;
     }
     static get styles() {
-        return i$3 ` .card-config { display: flex; flex-direction: column; gap: 8px; padding: 8px; } `;
+        return i$3 `
+      ha-form {
+        display: block;
+        padding: 16px;
+      }
+    `;
     }
 };
 __decorate([
     n({ attribute: false })
-], RotelAmplifierCardEditor.prototype, "hass", void 0);
+], RotelCardEditor.prototype, "hass", void 0);
 __decorate([
     r$1()
-], RotelAmplifierCardEditor.prototype, "_config", void 0);
-RotelAmplifierCardEditor = __decorate([
-    t$1("rotel-amplifier-card-editor")
-], RotelAmplifierCardEditor);
+], RotelCardEditor.prototype, "_config", void 0);
+RotelCardEditor = __decorate([
+    t$1("rotel-card-editor")
+], RotelCardEditor);
 window.customCardEditors = window.customCardEditors || {};
-window.customCardEditors["rotel-amplifier-card"] = "rotel-amplifier-card-editor";
+window.customCardEditors["rotel-amplifier-card"] = "rotel-card-editor";
 
-export { RotelAmplifierCardEditor };
+export { RotelCardEditor };
