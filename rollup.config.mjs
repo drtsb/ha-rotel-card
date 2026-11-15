@@ -12,7 +12,7 @@ export default [
     plugins: [resolve(), typescript({ tsconfig: "./tsconfig.json" })],
   },
   {
-    input: "src/rotel-amplifier-card-editor.ts",
+    input: "src/rotel-card-editor.ts",
     output: {
       file: "rotel-card-editor.js",
       format: "es",

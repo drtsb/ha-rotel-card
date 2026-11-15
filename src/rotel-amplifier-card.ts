@@ -4,6 +4,8 @@ import {
   HomeAssistant,
 } from "custom-card-helpers";
 
+import "./rotel-card-editor";
+
 interface RotelCardConfig {
   type: string;
   entity: string;
@@ -12,6 +14,8 @@ interface RotelCardConfig {
   show_name?: boolean;
   show_volume?: boolean;
   show_inputs?: boolean;
+  show_settings?: boolean;
+  hide_volume?: boolean;
   theme_variables?: Record<string, string>;
 }
 
@@ -48,6 +52,10 @@ export class RotelAmplifierCard extends LitElement {
 
   public getCardSize(): number {
     return 4;
+  }
+
+  static getConfigElement(): HTMLElement {
+    return document.createElement("rotel-card-editor");
   }
 
   /**
