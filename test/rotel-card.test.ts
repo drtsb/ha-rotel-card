@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { elementUpdated, fixture, fixtureCleanup, html } from "@open-wc/testing/pure";
 import type { HomeAssistant } from "custom-card-helpers";
 import { RotelAmplifierCard } from "../src/rotel-amplifier-card";
 
@@ -66,20 +67,21 @@ async function createCard(
   config: Record<string, unknown> = {},
   options: StateOptions = {},
 ): Promise<{ card: RotelAmplifierCard; hass: HomeAssistant; callService: ReturnType<typeof vi.fn> }> {
+  const { hass, callService } = createHass(options);
   const card = new RotelAmplifierCard() as RotelAmplifierCard;
 
-  const { hass, callService } = createHass(options);
   card.setConfig({ type: "custom:rotel-amplifier-card", entity: ENTITY, ...config });
   card.hass = hass;
 
-  document.body.appendChild(card);
-  await card.updateComplete;
+  // Mount via @open-wc fixture (handles cleanup + Lit update cycle).
+  await fixture(html`${card}`);
+  await elementUpdated(card);
 
   return { card, hass, callService };
 }
 
 afterEach(() => {
-  document.body.innerHTML = "";
+  fixtureCleanup();
   vi.restoreAllMocks();
 });
 
