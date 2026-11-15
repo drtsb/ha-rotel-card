@@ -60,10 +60,6 @@ jobs:
           echo "color=$COLOR" >> $GITHUB_OUTPUT
 
       - name: Update coverage badge Gist
-        if: github.ref == 'refs/heads/main' && env.GIST_SECRET != '' && env.GIST_ID != ''
-        env:
-          GIST_SECRET: ${{ secrets.GIST_SECRET }}
-          GIST_ID: ${{ secrets.GIST_ID }}
         uses: Schneegans/dynamic-badges-action@v3
         with:
           auth: ${{ secrets.GIST_SECRET }}
