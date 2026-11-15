@@ -1,7 +1,7 @@
 # Rotel Card for Home Assistant
 
 [![Created by AI](https://img.shields.io/badge/Created_by-AI-8A2BE2.svg)](https://github.com/drtsb/ha-rotel-card)
-[![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg)]()
+[![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/drtsb/${GIST_ID}/raw/rotel-card-coverage.json)](https://github.com/drtsb/ha-rotel-card/actions)
 [![Active Installations](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=Active%20Installs&query=%24.rotel.total&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json)](https://analytics.home-assistant.io/integrations/)
 [![GitHub All Releases](https://img.shields.io/github/downloads/drtsb/ha-rotel-card/total?color=2ea44f&logo=github&label=Downloads)](https://github.com/drtsb/ha-rotel-card/releases)
 [![GitHub Release](https://img.shields.io/github/v/release/drtsb/ha-rotel-card?color=blue&logo=github)](https://github.com/drtsb/ha-rotel-card/releases/latest)

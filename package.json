@@ -1,6 +1,6 @@
 {
   "name": "ha-rotel-card",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "private": true,
   "description": "Custom Lovelace card for Rotel amplifiers via ha-rotel integration",
   "keywords": [
@@ -17,6 +17,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run",
     "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
     "lint": "echo 'no lint configured'"
   },
   "dependencies": {
@@ -27,6 +28,7 @@
     "@open-wc/testing": "^5.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
     "@rollup/plugin-typescript": "^11.0.0",
+    "@vitest/coverage-v8": "^4.1.0",
     "jsdom": "^31.0.1",
     "rollup": "^4.0.0",
     "tslib": "^2.6.0",
