@@ -864,8 +864,6 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         this.hass.callService("media_player", service, { entity_id: this._config.entity, ...data });
     }
     _togglePower() { this._call("toggle"); }
-    _volumeUp() { this._call("volume_up"); }
-    _volumeDown() { this._call("volume_down"); }
     _mute() {
         const muted = this._entity?.attributes?.is_volume_muted;
         this._call("volume_mute", { is_volume_muted: !muted });
@@ -955,30 +953,29 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
               <span class="brand">ROTEL</span>
               ${model ? b `<span class="model">${model}</span>` : ""}
             </div>
-            <ha-icon-button
-              class="power ${on ? "on" : "off"}"
-              .label=${on ? t("card", "power_off") : t("card", "power_on")}
-              @click=${this._togglePower}
-            >
-              <ha-icon icon="mdi:power"></ha-icon>
-            </ha-icon-button>
+            <div class="header-controls">
+              <button
+                class="rotel-btn mute ${muted ? "muted" : ""} ${(fixedVolume || !on) ? "disabled" : ""}"
+                aria-label=${muted ? t("card", "unmute") : t("card", "mute")}
+                ?disabled=${fixedVolume || !on}
+                @click=${this._mute}
+              >
+                <ha-icon icon="mdi:volume-off" class="mute-icon"></ha-icon>
+              </button>
+              <button
+                class="rotel-btn power ${on ? "on" : "off"}"
+                aria-label=${on ? t("card", "power_off") : t("card", "power_on")}
+                @click=${this._togglePower}
+              >
+                <ha-icon icon="mdi:power" class="power-icon"></ha-icon>
+              </button>
+            </div>
           </div>
           <div class="volume">
             <div class="vnum">${Math.round(volume * 96)}</div>
             <div class="vlabel">${t("card", "volume_label")}</div>
             <input type="range" min="0" max="96" step="1" .value=${String(Math.round(volume * 96))}
               ?disabled=${fixedVolume} @input=${this._setVolume} />
-          </div>
-          <div class="controls">
-            <ha-icon-button class="control-btn vol" .label=${t("card", "volume_down")} ?disabled=${fixedVolume} @click=${this._volumeDown}>
-              <ha-icon icon="mdi:volume-minus"></ha-icon>
-            </ha-icon-button>
-            <ha-icon-button class="control-btn vol mute" .label=${muted ? t("card", "unmute") : t("card", "mute")} ?disabled=${fixedVolume} @click=${this._mute}>
-              <ha-icon icon=${muted ? "mdi:volume-off" : "mdi:volume-high"}></ha-icon>
-            </ha-icon-button>
-            <ha-icon-button class="control-btn vol" .label=${t("card", "volume_up")} ?disabled=${fixedVolume} @click=${this._volumeUp}>
-              <ha-icon icon="mdi:volume-plus"></ha-icon>
-            </ha-icon-button>
           </div>
           <div class="rotel-panel">
             <div class="source-grid">
@@ -1165,26 +1162,31 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
       .brand { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.25rem; color: var(--rotel-accent, #c9a227); }
       .brand-group { display: flex; align-items: baseline; gap: 0.625rem; }
       .model { font-size: 0.75rem; letter-spacing: 1px; color: var(--rotel-text-muted, var(--secondary-text-color, #888)); }
-      ha-icon-button {
-        --mdc-icon-button-size: 2.5rem;
-        --mdc-icon-size: 1.375rem;
-        color: var(--rotel-icon-color, #cfcfcf);
+      .header-controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
       }
-      ha-icon-button ha-icon { width: 1.375rem; height: 1.375rem; }
-      ha-icon-button:hover { color: #fff; }
-      ha-icon-button.power.on ha-icon { color: var(--success-color, green); }
-      ha-icon-button.power.off ha-icon { color: var(--error-color, red); }
-      ha-icon-button[disabled],
-      ha-icon-button[disabled]:hover { color: var(--rotel-disabled, #5a5a5a); pointer-events: none; }
+      .header .rotel-btn {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+      }
+      .header .rotel-btn ha-icon {
+        width: 22px;
+        height: 22px;
+      }
+      .header-controls .rotel-btn.power.on .power-icon { color: var(--success-color, green); filter: drop-shadow(0 0 6px rgba(0, 200, 0, 0.6)); }
+      .header-controls .rotel-btn.power.off .power-icon { color: var(--error-color, red); filter: drop-shadow(0 0 6px rgba(200, 0, 0, 0.6)); }
+      .header-controls .rotel-btn.mute.muted .mute-icon { color: #f5c518; filter: drop-shadow(0 0 6px rgba(255, 204, 0, 0.7)); }
+      .header-controls .rotel-btn.mute:not(.muted) .mute-icon { color: var(--rotel-text-muted, #555); }
+      .header-controls .rotel-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
       .volume { text-align: center; background: var(--rotel-display-bg, transparent); }
       .vnum { font-size: 3rem; font-weight: 300; color: var(--rotel-display-text, #c9a227); }
       .vlabel { font-size: 0.6875rem; letter-spacing: 2px; color: var(--rotel-text-muted, var(--secondary-text-color, #888)); }
       input[type=range] { width: 100%; }
       input[type=range][disabled] { opacity: 0.4; cursor: not-allowed; }
-      .controls { display: flex; align-items: center; justify-content: center; gap: 0.625rem; }
-      .control-btn { background: var(--rotel-button-color, #2a2a2a); color: var(--rotel-text, var(--primary-text-color, #e0e0e0)); border: 1px solid var(--rotel-border-button, #444); border-radius: 0.375rem; padding: 0.375rem 0.75rem; cursor: pointer; }
-      .control-btn.active { background: var(--rotel-accent, #c9a227); color: var(--rotel-active-text, #000); }
-      .control-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
 
       /* Rotel-style source selector panel */
       .rotel-panel {
