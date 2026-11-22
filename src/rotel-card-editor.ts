@@ -25,12 +25,11 @@ interface RotelCardConfig {
 
 interface FormSchema {
   name: string;
-  label?: string;
   selector:
     | { entity: { domain: string } }
     | { text: {} }
     | { boolean: {} }
-    | { select: { options: string[]; mode: string; translation_key?: string } };
+    | { select: { options: { value: string; label: string }[]; mode: string } };
 }
 
 @customElement("rotel-card-editor")
@@ -50,39 +49,63 @@ export class RotelCardEditor extends LitElement {
     fireEvent(this, "config-changed", { config: newConfig });
   }
 
+  public computeLabel = (schema: { name: string }): string => {
+    if (!this.hass) return schema.name;
+    const t = (key: string) => localize(this.hass, "editor", key);
+    const name = schema.name;
+    if (name.startsWith("settings_entities.")) {
+      const entityKey = name.split(".")[1];
+      return t(`${entityKey}_entity`);
+    }
+    return t(name);
+  };
+
+  public computeHelper = (schema: { name: string }): string | undefined => {
+    if (!this.hass) return undefined;
+    const t = (key: string) => localize(this.hass, "editor", key);
+    const helperKey = `${schema.name}_helper`;
+    const translation = t(helperKey);
+    return translation !== helperKey ? translation : undefined;
+  };
+
   protected render() {
     if (!this._config || !this.hass) return html``;
 
     const showSettings = this._config.show_settings === true;
-    const t = (ns: "editor", key: string) => localize(this.hass, ns, key);
+    const t = (key: string) => localize(this.hass, "editor", key);
+
+    const themeOptions = [
+      { value: "silver", label: t("theme_silver") },
+      { value: "black", label: t("theme_black") },
+      { value: "champagne", label: t("theme_champagne") },
+      { value: "minimal", label: t("theme_minimal") },
+    ];
 
     const schema: FormSchema[] = [
-      { name: "entity", label: t("editor", "entity"), selector: { entity: { domain: "media_player" } } },
-      { name: "model", label: t("editor", "model"), selector: { text: {} } },
+      { name: "entity", selector: { entity: { domain: "media_player" } } },
+      { name: "model", selector: { text: {} } },
       {
         name: "theme",
-        label: t("editor", "theme"),
         selector: {
           select: {
-            options: ["silver", "black", "champagne", "minimal"],
+            options: themeOptions,
             mode: "dropdown",
-            translation_key: "theme",
           },
         },
       },
-      { name: "show_settings", label: t("editor", "show_settings"), selector: { boolean: {} } },
-      { name: "hide_volume", label: t("editor", "hide_volume"), selector: { boolean: {} } },
+      { name: "show_settings", selector: { boolean: {} } },
+      { name: "hide_volume", selector: { boolean: {} } },
     ];
 
     if (showSettings) {
       schema.push(
-        { name: "settings_entities.bass", label: t("editor", "bass_entity"), selector: { entity: { domain: "number" } } },
-        { name: "settings_entities.treble", label: t("editor", "treble_entity"), selector: { entity: { domain: "number" } } },
-        { name: "settings_entities.balance", label: t("editor", "balance_entity"), selector: { entity: { domain: "number" } } },
-        { name: "settings_entities.speakers_a", label: t("editor", "speakers_a_entity"), selector: { entity: { domain: "switch" } } },
-        { name: "settings_entities.speakers_b", label: t("editor", "speakers_b_entity"), selector: { entity: { domain: "switch" } } },
-        { name: "settings_entities.dimmer", label: t("editor", "dimmer_entity"), selector: { entity: { domain: "select" } } },
-        { name: "settings_entities.tone_bypass", label: t("editor", "tone_bypass_entity"), selector: { entity: { domain: "switch" } } },
+        { name: "settings_entities.bass", selector: { entity: { domain: "number" } } },
+        { name: "settings_entities.treble", selector: { entity: { domain: "number" } } },
+        { name: "settings_entities.balance", selector: { entity: { domain: "number" } } },
+        { name: "settings_entities.speakers_a", selector: { entity: { domain: "switch" } } },
+        { name: "settings_entities.speakers_b", selector: { entity: { domain: "switch" } } },
+        { name: "settings_entities.dimmer", selector: { entity: { domain: "select" } } },
+        { name: "settings_entities.tone_bypass", selector: { entity: { domain: "switch" } } },
       );
     }
 
@@ -91,6 +114,8 @@ export class RotelCardEditor extends LitElement {
         .hass=${this.hass}
         .data=${this._config}
         .schema=${schema}
+        .computeLabel=${this.computeLabel}
+        .computeHelper=${this.computeHelper}
         @value-changed=${this.valueChanged}
       ></ha-form>
     `;

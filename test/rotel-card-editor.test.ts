@@ -32,7 +32,17 @@ describe("rotel-card-editor", () => {
     expect(schema[1]).toMatchObject({ name: "model", selector: { text: {} } });
     expect(schema[2]).toMatchObject({
       name: "theme",
-      selector: { select: { options: ["silver", "black", "champagne", "minimal"], mode: "dropdown" } },
+      selector: {
+        select: {
+          options: [
+            { value: "silver", label: "Silver" },
+            { value: "black", label: "Black" },
+            { value: "champagne", label: "Champagne" },
+            { value: "minimal", label: "Minimal" },
+          ],
+          mode: "dropdown",
+        },
+      },
     });
     expect(schema[3]).toMatchObject({ name: "show_settings", selector: { boolean: {} } });
     expect(schema[4]).toMatchObject({ name: "hide_volume", selector: { boolean: {} } });
