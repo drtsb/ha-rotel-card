@@ -196,27 +196,35 @@ describe("rotel-amplifier-card", () => {
     expect(query(card, ".model").textContent?.trim()).toBe("RA-1572");
   });
 
-  it("disables the volume slider and volume buttons in fixed volume / pass-through mode", async () => {
+  it("disables the volume slider and mutes button in fixed volume / pass-through mode", async () => {
     const { card } = await createCard({}, { fixed_volume: true });
 
     const slider = query<HTMLInputElement>(card, 'input[type="range"]');
     expect(slider).toBeDefined();
     expect(slider.disabled).toBe(true);
 
-    const volumeButtons = queryAll(card, "ha-icon-button.vol");
-    expect(volumeButtons.length).toBe(3);
-    volumeButtons.forEach((btn) => {
-      expect(btn.hasAttribute("disabled")).toBe(true);
-    });
+    const mute = query(card, ".header-controls .rotel-btn.mute");
+    expect(mute.hasAttribute("disabled")).toBe(true);
+
+    expect(queryOptional(card, ".control-btn")).toBeNull();
+    expect(queryOptional(card, 'ha-icon[icon="mdi:volume-minus"]')).toBeNull();
+    expect(queryOptional(card, 'ha-icon[icon="mdi:volume-plus"]')).toBeNull();
+  });
+
+  it("does not render vol- / vol+ buttons at all", async () => {
+    const { card } = await createCard();
+
+    expect(queryOptional(card, ".control-btn")).toBeNull();
+    expect(queryOptional(card, 'ha-icon[icon="mdi:volume-minus"]')).toBeNull();
+    expect(queryOptional(card, 'ha-icon[icon="mdi:volume-plus"]')).toBeNull();
   });
 
   it("enables the volume controls when fixed volume is not active", async () => {
     const { card } = await createCard();
 
     expect(query<HTMLInputElement>(card, 'input[type="range"]').disabled).toBe(false);
-    queryAll(card, "ha-icon-button.vol").forEach((btn) => {
-      expect(btn.hasAttribute("disabled")).toBe(false);
-    });
+    const mute = query(card, ".header-controls .rotel-btn.mute");
+    expect(mute.hasAttribute("disabled")).toBe(false);
   });
 
   it("does not send volume commands while fixed volume is active", async () => {
@@ -260,15 +268,59 @@ describe("rotel-amplifier-card", () => {
   it("sends toggle when the power button is pressed while off", async () => {
     const { card, callService } = await createCard({ state: "off" });
 
-    query<HTMLElement>(card, "ha-icon-button.power").click();
+    query<HTMLElement>(card, ".header-controls .rotel-btn.power").click();
 
     expect(callService).toHaveBeenCalledWith("media_player", "toggle", { entity_id: ENTITY });
+  });
+
+  it("renders Mute and Power buttons in the header controls", async () => {
+    const { card } = await createCard();
+
+    expect(query(card, ".header-controls")).toBeDefined();
+    expect(query(card, ".header-controls .rotel-btn.mute")).toBeDefined();
+    expect(query(card, ".header-controls .rotel-btn.power")).toBeDefined();
+    expect(query(card, '.header-controls .rotel-btn.mute ha-icon[icon="mdi:volume-off"]')).toBeDefined();
+    expect(query(card, '.header-controls .rotel-btn.power ha-icon[icon="mdi:power"]')).toBeDefined();
+  });
+
+  it("highlights the mute button yellow when muted and calls volume_mute on click", async () => {
+    const { card, callService, hass } = await createCard({}, { is_volume_muted: true });
+
+    const mute = query<HTMLElement>(card, ".header-controls .rotel-btn.mute");
+    expect(mute.classList.contains("muted")).toBe(true);
+    expect(query(card, '.header-controls .rotel-btn.mute ha-icon[icon="mdi:volume-off"]')).toBeDefined();
+
+    mute.click();
+    expect(callService).toHaveBeenCalledWith("media_player", "volume_mute", {
+      entity_id: ENTITY,
+      is_volume_muted: false,
+    });
+
+    callService.mockClear();
+
+    hass.states[ENTITY].attributes.is_volume_muted = false;
+    card.hass = { ...hass } as HomeAssistant;
+    await card.updateComplete;
+
+    expect(query(card, ".header-controls .rotel-btn.mute").classList.contains("muted")).toBe(false);
+  });
+
+  it("disables the mute button when fixed volume is active", async () => {
+    const { card } = await createCard({}, { fixed_volume: true });
+
+    expect(query(card, ".header-controls .rotel-btn.mute").hasAttribute("disabled")).toBe(true);
+  });
+
+  it("disables the mute button when the amplifier is off", async () => {
+    const { card } = await createCard({}, { state: "off" });
+
+    expect(query(card, ".header-controls .rotel-btn.mute").hasAttribute("disabled")).toBe(true);
   });
 
   it("turns the power icon red (off state) when the entity state becomes off", async () => {
     const { card, hass } = await createCard({ state: "on" });
 
-    const power = query<HTMLElement>(card, "ha-icon-button.power");
+    const power = query<HTMLElement>(card, ".header-controls .rotel-btn.power");
     expect(power.classList.contains("on")).toBe(true);
     expect(power.classList.contains("off")).toBe(false);
 
@@ -276,14 +328,15 @@ describe("rotel-amplifier-card", () => {
     card.hass = { ...hass } as HomeAssistant;
     await card.updateComplete;
 
-    const offPower = query<HTMLElement>(card, "ha-icon-button.power");
+    const offPower = query<HTMLElement>(card, ".header-controls .rotel-btn.power");
     expect(offPower.classList.contains("off")).toBe(true);
     expect(offPower.classList.contains("on")).toBe(false);
     expect(offPower.classList.contains("power")).toBe(true);
 
     const styles = RotelAmplifierCard.styles as unknown as { cssText: string };
     const cssText = styles.cssText ?? "";
-    expect(cssText).toMatch(/ha-icon-button\.power\.off ha-icon\s*\{\s*color:\s*var\(--error-color,\s*red\)/);
+    expect(cssText).toMatch(/\.header-controls\s*\.rotel-btn\.power\.off\s*\.power-icon\s*\{\s*color:\s*var\(--error-color,\s*red\)/);
+    expect(cssText).toMatch(/#f5c518/);
     expect(cssText).toMatch(/input\[type=range\]\[disabled\]/);
   });
 
