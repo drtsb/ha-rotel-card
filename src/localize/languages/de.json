@@ -1,0 +1,49 @@
+{
+  "card": {
+    "power_off": "Ausschalten",
+    "power_on": "Einschalten",
+    "volume_down": "Leiser",
+    "volume_up": "Lauter",
+    "mute": "Stummschalten",
+    "unmute": "Ton einschalten",
+    "volume_label": "LAUTSTÄRKE",
+    "settings_title": "EINSTELLUNGEN",
+    "source_select": "Quelle wählen",
+    "more_sources": "+{count} weitere",
+    "unavailable": "—"
+  },
+  "settings": {
+    "bass": "BASS",
+    "treble": "HÖHEN",
+    "balance": "BALANCE",
+    "speakers_a": "LAUTSPRECHER A",
+    "speakers_b": "LAUTSPRECHER B",
+    "tone_bypass": "TON BYPASS",
+    "dimmer": "DIMMER"
+  },
+  "editor": {
+    "entity": "Entität",
+    "model": "Modell",
+    "theme": "Design",
+    "show_settings": "Einstellungsbereich anzeigen",
+    "hide_volume": "Lautstärkeregelung ausblenden",
+    "theme_silver": "Silber",
+    "theme_black": "Schwarz",
+    "theme_champagne": "Champagner",
+    "theme_minimal": "Minimal",
+    "settings_entities": "Einstellungs-Entitäten",
+    "bass_entity": "Bass-Entität",
+    "treble_entity": "Höhen-Entität",
+    "balance_entity": "Balance-Entität",
+    "speakers_a_entity": "Lautsprecher A Entität",
+    "speakers_b_entity": "Lautsprecher B Entität",
+    "dimmer_entity": "Dimmer-Entität",
+    "tone_bypass_entity": "Tone Bypass Entität"
+  },
+  "state": {
+    "on": "Ein",
+    "off": "Aus",
+    "standby": "Standby",
+    "unavailable": "Nicht verfügbar"
+  }
+}

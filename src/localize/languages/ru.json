@@ -1,0 +1,49 @@
+{
+  "card": {
+    "power_off": "Выключить",
+    "power_on": "Включить",
+    "volume_down": "Уменьшить громкость",
+    "volume_up": "Увеличить громкость",
+    "mute": "Без звука",
+    "unmute": "Включить звук",
+    "volume_label": "ГРОМКОСТЬ",
+    "settings_title": "НАСТРОЙКИ",
+    "source_select": "Выбрать источник",
+    "more_sources": "+{count} ещё",
+    "unavailable": "—"
+  },
+  "settings": {
+    "bass": "БАСС",
+    "treble": "ВЫСОКИЕ",
+    "balance": "БАЛАНС",
+    "speakers_a": "ДИНАМИКИ A",
+    "speakers_b": "ДИНАМИКИ B",
+    "tone_bypass": "ОБХОД ТОНА",
+    "dimmer": "ДИММЕР"
+  },
+  "editor": {
+    "entity": "Сущность",
+    "model": "Модель",
+    "theme": "Тема",
+    "show_settings": "Показать панель настроек",
+    "hide_volume": "Скрыть управление громкостью",
+    "theme_silver": "Серебро",
+    "theme_black": "Чёрный",
+    "theme_champagne": "Шампань",
+    "theme_minimal": "Минимальный",
+    "settings_entities": "Сущности настроек",
+    "bass_entity": "Сущность басса",
+    "treble_entity": "Сущность высоких",
+    "balance_entity": "Сущность баланса",
+    "speakers_a_entity": "Сущность динамиков A",
+    "speakers_b_entity": "Сущность динамиков B",
+    "dimmer_entity": "Сущность диммера",
+    "tone_bypass_entity": "Сущность обхода тона"
+  },
+  "state": {
+    "on": "Вкл",
+    "off": "Выкл",
+    "standby": "Ожидание",
+    "unavailable": "Недоступно"
+  }
+}

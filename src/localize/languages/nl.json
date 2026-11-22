@@ -1,0 +1,49 @@
+{
+  "card": {
+    "power_off": "Uitschakelen",
+    "power_on": "Insakelen",
+    "volume_down": "Volume verlagen",
+    "volume_up": "Volume verhogen",
+    "mute": "Dempen",
+    "unmute": "Geluid activeren",
+    "volume_label": "VOLUME",
+    "settings_title": "INSTELLINGEN",
+    "source_select": "Bron selecteren",
+    "more_sources": "+{count} meer",
+    "unavailable": "—"
+  },
+  "settings": {
+    "bass": "BASS",
+    "treble": "HOOGTE",
+    "balance": "BALANS",
+    "speakers_a": "LUIDSPREKERS A",
+    "speakers_b": "LUIDSPREKERS B",
+    "tone_bypass": "TOON BYPASS",
+    "dimmer": "DIMMER"
+  },
+  "editor": {
+    "entity": "Entiteit",
+    "model": "Model",
+    "theme": "Thema",
+    "show_settings": "Instellingenpaneel tonen",
+    "hide_volume": "Volumebediening verbergen",
+    "theme_silver": "Zilver",
+    "theme_black": "Zwart",
+    "theme_champagne": "Champagne",
+    "theme_minimal": "Minimaal",
+    "settings_entities": "Instelling entiteiten",
+    "bass_entity": "Bas entiteit",
+    "treble_entity": "Hoogte entiteit",
+    "balance_entity": "Balans entiteit",
+    "speakers_a_entity": "Luidsprekers A entiteit",
+    "speakers_b_entity": "Luidsprekers B entiteit",
+    "dimmer_entity": "Dimmer entiteit",
+    "tone_bypass_entity": "Toon Bypass entiteit"
+  },
+  "state": {
+    "on": "Aan",
+    "off": "Uit",
+    "standby": "Standby",
+    "unavailable": "Niet beschikbaar"
+  }
+}

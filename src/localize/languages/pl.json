@@ -1,0 +1,49 @@
+{
+  "card": {
+    "power_off": "Wyłącz",
+    "power_on": "Włącz",
+    "volume_down": "Ciszej",
+    "volume_up": "Głośniej",
+    "mute": "Wycisz",
+    "unmute": "Przywróć dźwięk",
+    "volume_label": "GŁOŚNOŚĆ",
+    "settings_title": "USTAWIENIA",
+    "source_select": "Wybierz źródło",
+    "more_sources": "+{count} więcej",
+    "unavailable": "—"
+  },
+  "settings": {
+    "bass": "BASY",
+    "treble": "SOPRANY",
+    "balance": "BALANS",
+    "speakers_a": "GŁOŚNIKI A",
+    "speakers_b": "GŁOŚNIKI B",
+    "tone_bypass": "POMIJANIE TONU",
+    "dimmer": "DIMMER"
+  },
+  "editor": {
+    "entity": "Encja",
+    "model": "Model",
+    "theme": "Motyw",
+    "show_settings": "Pokaż panel ustawień",
+    "hide_volume": "Ukryj sterowanie głośnością",
+    "theme_silver": "Srebrny",
+    "theme_black": "Czarny",
+    "theme_champagne": "Szampański",
+    "theme_minimal": "Minimalny",
+    "settings_entities": "Encje ustawień",
+    "bass_entity": "Encja basów",
+    "treble_entity": "Encja sopranów",
+    "balance_entity": "Encja balansu",
+    "speakers_a_entity": "Encja głośników A",
+    "speakers_b_entity": "Encja głośników B",
+    "dimmer_entity": "Encja dimmera",
+    "tone_bypass_entity": "Encja pomijania tonu"
+  },
+  "state": {
+    "on": "Włączony",
+    "off": "Wyłączony",
+    "standby": "Tryb czuwania",
+    "unavailable": "Niedostępny"
+  }
+}
