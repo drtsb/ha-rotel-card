@@ -1,0 +1,49 @@
+{
+  "card": {
+    "power_off": "Spegni",
+    "power_on": "Accendi",
+    "volume_down": "Abbassa volume",
+    "volume_up": "Alza volume",
+    "mute": "Muto",
+    "unmute": "Riattiva audio",
+    "volume_label": "VOLUME",
+    "settings_title": "IMPOSTAZIONI",
+    "source_select": "Seleziona sorgente",
+    "more_sources": "+{count} altro",
+    "unavailable": "—"
+  },
+  "settings": {
+    "bass": "BASSI",
+    "treble": "ACUTI",
+    "balance": "BILANCIAMENTO",
+    "speakers_a": "DIFFUSORI A",
+    "speakers_b": "DIFFUSORI B",
+    "tone_bypass": "BYPASS TONALE",
+    "dimmer": "DIMMER"
+  },
+  "editor": {
+    "entity": "Entità",
+    "model": "Modello",
+    "theme": "Tema",
+    "show_settings": "Mostra pannello impostazioni",
+    "hide_volume": "Nascondi controlli volume",
+    "theme_silver": "Argento",
+    "theme_black": "Nero",
+    "theme_champagne": "Champagne",
+    "theme_minimal": "Minimale",
+    "settings_entities": "Entità impostazioni",
+    "bass_entity": "Entità Bassi",
+    "treble_entity": "Entità Acuti",
+    "balance_entity": "Entità Bilanciamento",
+    "speakers_a_entity": "Entità Diffusori A",
+    "speakers_b_entity": "Entità Diffusori B",
+    "dimmer_entity": "Entità Dimmer",
+    "tone_bypass_entity": "Entità Bypass Tonale"
+  },
+  "state": {
+    "on": "Acceso",
+    "off": "Spento",
+    "standby": "Standby",
+    "unavailable": "Non disponibile"
+  }
+}

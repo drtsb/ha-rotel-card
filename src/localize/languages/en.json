@@ -1,0 +1,49 @@
+{
+  "card": {
+    "power_off": "Power off",
+    "power_on": "Power on",
+    "volume_down": "Volume down",
+    "volume_up": "Volume up",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "volume_label": "VOLUME",
+    "settings_title": "SETTINGS",
+    "source_select": "Select source",
+    "more_sources": "+{count} more",
+    "unavailable": "—"
+  },
+  "settings": {
+    "bass": "BASS",
+    "treble": "TREBLE",
+    "balance": "BALANCE",
+    "speakers_a": "SPEAKERS A",
+    "speakers_b": "SPEAKERS B",
+    "tone_bypass": "TONE BYPASS",
+    "dimmer": "DIMMER"
+  },
+  "editor": {
+    "entity": "Entity",
+    "model": "Model",
+    "theme": "Theme",
+    "show_settings": "Show settings panel",
+    "hide_volume": "Hide volume controls",
+    "theme_silver": "Silver",
+    "theme_black": "Black",
+    "theme_champagne": "Champagne",
+    "theme_minimal": "Minimal",
+    "settings_entities": "Settings entities",
+    "bass_entity": "Bass entity",
+    "treble_entity": "Treble entity",
+    "balance_entity": "Balance entity",
+    "speakers_a_entity": "Speakers A entity",
+    "speakers_b_entity": "Speakers B entity",
+    "dimmer_entity": "Dimmer entity",
+    "tone_bypass_entity": "Tone Bypass entity"
+  },
+  "state": {
+    "on": "On",
+    "off": "Off",
+    "standby": "Standby",
+    "unavailable": "Unavailable"
+  }
+}

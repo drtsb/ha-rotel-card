@@ -1,0 +1,49 @@
+{
+  "card": {
+    "power_off": "关闭电源",
+    "power_on": "开启电源",
+    "volume_down": "降低音量",
+    "volume_up": "增加音量",
+    "mute": "静音",
+    "unmute": "取消静音",
+    "volume_label": "音量",
+    "settings_title": "设置",
+    "source_select": "选择输入源",
+    "more_sources": "更多 {count} 个",
+    "unavailable": "—"
+  },
+  "settings": {
+    "bass": "低音",
+    "treble": "高音",
+    "balance": "声道平衡",
+    "speakers_a": "音箱 A",
+    "speakers_b": "音箱 B",
+    "tone_bypass": "音调直通",
+    "dimmer": "显示调光"
+  },
+  "editor": {
+    "entity": "实体",
+    "model": "型号",
+    "theme": "主题",
+    "show_settings": "显示设置面板",
+    "hide_volume": "隐藏音量控制",
+    "theme_silver": "银色",
+    "theme_black": "黑色",
+    "theme_champagne": "香槟金",
+    "theme_minimal": "极简",
+    "settings_entities": "设置实体",
+    "bass_entity": "低音实体",
+    "treble_entity": "高音实体",
+    "balance_entity": "平衡实体",
+    "speakers_a_entity": "音箱 A 实体",
+    "speakers_b_entity": "音箱 B 实体",
+    "dimmer_entity": "调光实体",
+    "tone_bypass_entity": "音调直通实体"
+  },
+  "state": {
+    "on": "开启",
+    "off": "关闭",
+    "standby": "待机",
+    "unavailable": "不可用"
+  }
+}

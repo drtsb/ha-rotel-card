@@ -1,0 +1,49 @@
+{
+  "card": {
+    "power_off": "Apagar",
+    "power_on": "Encender",
+    "volume_down": "Bajar volumen",
+    "volume_up": "Subir volumen",
+    "mute": "Silenciar",
+    "unmute": "Activar sonido",
+    "volume_label": "VOLUMEN",
+    "settings_title": "AJUSTES",
+    "source_select": "Seleccionar fuente",
+    "more_sources": "+{count} más",
+    "unavailable": "—"
+  },
+  "settings": {
+    "bass": "GRAVES",
+    "treble": "AGUDOS",
+    "balance": "BALANCE",
+    "speakers_a": "ALTAVOCES A",
+    "speakers_b": "ALTAVOCES B",
+    "tone_bypass": "BYPASS TONAL",
+    "dimmer": "DIMMER"
+  },
+  "editor": {
+    "entity": "Entidad",
+    "model": "Modelo",
+    "theme": "Tema",
+    "show_settings": "Mostrar panel de ajustes",
+    "hide_volume": "Ocultar controles de volumen",
+    "theme_silver": "Plata",
+    "theme_black": "Negro",
+    "theme_champagne": "Champán",
+    "theme_minimal": "Mínimo",
+    "settings_entities": "Entidades de ajustes",
+    "bass_entity": "Entidad Graves",
+    "treble_entity": "Entidad Agudos",
+    "balance_entity": "Entidad Balance",
+    "speakers_a_entity": "Entidad Altavoces A",
+    "speakers_b_entity": "Entidad Altavoces B",
+    "dimmer_entity": "Entidad Dimmer",
+    "tone_bypass_entity": "Entidad Bypass Tonal"
+  },
+  "state": {
+    "on": "Encendido",
+    "off": "Apagado",
+    "standby": "En espera",
+    "unavailable": "No disponible"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "card": {
+    "power_off": "Éteindre",
+    "power_on": "Allumer",
+    "volume_down": "Baisser le volume",
+    "volume_up": "Augmenter le volume",
+    "mute": "Muet",
+    "unmute": "Réactiver le son",
+    "volume_label": "VOLUME",
+    "settings_title": "RÉGLAGES",
+    "source_select": "Sélectionner la source",
+    "more_sources": "+{count} de plus",
+    "unavailable": "—"
+  },
+  "settings": {
+    "bass": "BASS",
+    "treble": "AIGUS",
+    "balance": "BALANCE",
+    "speakers_a": "HAUT-PARLEURS A",
+    "speakers_b": "HAUT-PARLEURS B",
+    "tone_bypass": "BYPASS TONAL",
+    "dimmer": "VARIATEUR"
+  },
+  "editor": {
+    "entity": "Entité",
+    "model": "Modèle",
+    "theme": "Thème",
+    "show_settings": "Afficher le panneau de réglages",
+    "hide_volume": "Masquer les contrôles de volume",
+    "theme_silver": "Argent",
+    "theme_black": "Noir",
+    "theme_champagne": "Champagne",
+    "theme_minimal": "Minimal",
+    "settings_entities": "Entités de réglages",
+    "bass_entity": "Entité Bass",
+    "treble_entity": "Entité Aigus",
+    "balance_entity": "Entité Balance",
+    "speakers_a_entity": "Entité Haut-parleurs A",
+    "speakers_b_entity": "Entité Haut-parleurs B",
+    "dimmer_entity": "Entité Variateur",
+    "tone_bypass_entity": "Entité Bypass Tonal"
+  },
+  "state": {
+    "on": "Allumé",
+    "off": "Éteint",
+    "standby": "Veille",
+    "unavailable": "Indisponible"
+  }
+}

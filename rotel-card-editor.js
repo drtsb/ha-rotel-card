@@ -74,6 +74,595 @@ const t$1=t=>(e,o)=>{ void 0!==o?o.addInitializer(()=>{customElements.define(t,e
 
 var t,r;!function(e){e.language="language",e.system="system",e.comma_decimal="comma_decimal",e.decimal_comma="decimal_comma",e.space_comma="space_comma",e.none="none";}(t||(t={})),function(e){e.language="language",e.system="system",e.am_pm="12",e.twenty_four="24";}(r||(r={}));var ne=function(e,t,r,n){n=n||{},r=null==r?{}:r;var i=new Event(t,{bubbles:void 0===n.bubbles||n.bubbles,cancelable:Boolean(n.cancelable),composed:void 0===n.composed||n.composed});return i.detail=r,e.dispatchEvent(i),i};
 
+var card$9 = {
+	power_off: "Power off",
+	power_on: "Power on",
+	volume_down: "Volume down",
+	volume_up: "Volume up",
+	mute: "Mute",
+	unmute: "Unmute",
+	volume_label: "VOLUME",
+	settings_title: "SETTINGS",
+	source_select: "Select source",
+	more_sources: "+{count} more",
+	unavailable: "—"
+};
+var settings$9 = {
+	bass: "BASS",
+	treble: "TREBLE",
+	balance: "BALANCE",
+	speakers_a: "SPEAKERS A",
+	speakers_b: "SPEAKERS B",
+	tone_bypass: "TONE BYPASS",
+	dimmer: "DIMMER"
+};
+var editor$9 = {
+	entity: "Entity",
+	model: "Model",
+	theme: "Theme",
+	show_settings: "Show settings panel",
+	hide_volume: "Hide volume controls",
+	theme_silver: "Silver",
+	theme_black: "Black",
+	theme_champagne: "Champagne",
+	theme_minimal: "Minimal",
+	settings_entities: "Settings entities",
+	bass_entity: "Bass entity",
+	treble_entity: "Treble entity",
+	balance_entity: "Balance entity",
+	speakers_a_entity: "Speakers A entity",
+	speakers_b_entity: "Speakers B entity",
+	dimmer_entity: "Dimmer entity",
+	tone_bypass_entity: "Tone Bypass entity"
+};
+var state$9 = {
+	on: "On",
+	off: "Off",
+	standby: "Standby",
+	unavailable: "Unavailable"
+};
+var en = {
+	card: card$9,
+	settings: settings$9,
+	editor: editor$9,
+	state: state$9
+};
+
+var card$8 = {
+	power_off: "Ausschalten",
+	power_on: "Einschalten",
+	volume_down: "Leiser",
+	volume_up: "Lauter",
+	mute: "Stummschalten",
+	unmute: "Ton einschalten",
+	volume_label: "LAUTSTÄRKE",
+	settings_title: "EINSTELLUNGEN",
+	source_select: "Quelle wählen",
+	more_sources: "+{count} weitere",
+	unavailable: "—"
+};
+var settings$8 = {
+	bass: "BASS",
+	treble: "HÖHEN",
+	balance: "BALANCE",
+	speakers_a: "LAUTSPRECHER A",
+	speakers_b: "LAUTSPRECHER B",
+	tone_bypass: "TON BYPASS",
+	dimmer: "DIMMER"
+};
+var editor$8 = {
+	entity: "Entität",
+	model: "Modell",
+	theme: "Design",
+	show_settings: "Einstellungsbereich anzeigen",
+	hide_volume: "Lautstärkeregelung ausblenden",
+	theme_silver: "Silber",
+	theme_black: "Schwarz",
+	theme_champagne: "Champagner",
+	theme_minimal: "Minimal",
+	settings_entities: "Einstellungs-Entitäten",
+	bass_entity: "Bass-Entität",
+	treble_entity: "Höhen-Entität",
+	balance_entity: "Balance-Entität",
+	speakers_a_entity: "Lautsprecher A Entität",
+	speakers_b_entity: "Lautsprecher B Entität",
+	dimmer_entity: "Dimmer-Entität",
+	tone_bypass_entity: "Tone Bypass Entität"
+};
+var state$8 = {
+	on: "Ein",
+	off: "Aus",
+	standby: "Standby",
+	unavailable: "Nicht verfügbar"
+};
+var de = {
+	card: card$8,
+	settings: settings$8,
+	editor: editor$8,
+	state: state$8
+};
+
+var card$7 = {
+	power_off: "Éteindre",
+	power_on: "Allumer",
+	volume_down: "Baisser le volume",
+	volume_up: "Augmenter le volume",
+	mute: "Muet",
+	unmute: "Réactiver le son",
+	volume_label: "VOLUME",
+	settings_title: "RÉGLAGES",
+	source_select: "Sélectionner la source",
+	more_sources: "+{count} de plus",
+	unavailable: "—"
+};
+var settings$7 = {
+	bass: "BASS",
+	treble: "AIGUS",
+	balance: "BALANCE",
+	speakers_a: "HAUT-PARLEURS A",
+	speakers_b: "HAUT-PARLEURS B",
+	tone_bypass: "BYPASS TONAL",
+	dimmer: "VARIATEUR"
+};
+var editor$7 = {
+	entity: "Entité",
+	model: "Modèle",
+	theme: "Thème",
+	show_settings: "Afficher le panneau de réglages",
+	hide_volume: "Masquer les contrôles de volume",
+	theme_silver: "Argent",
+	theme_black: "Noir",
+	theme_champagne: "Champagne",
+	theme_minimal: "Minimal",
+	settings_entities: "Entités de réglages",
+	bass_entity: "Entité Bass",
+	treble_entity: "Entité Aigus",
+	balance_entity: "Entité Balance",
+	speakers_a_entity: "Entité Haut-parleurs A",
+	speakers_b_entity: "Entité Haut-parleurs B",
+	dimmer_entity: "Entité Variateur",
+	tone_bypass_entity: "Entité Bypass Tonal"
+};
+var state$7 = {
+	on: "Allumé",
+	off: "Éteint",
+	standby: "Veille",
+	unavailable: "Indisponible"
+};
+var fr = {
+	card: card$7,
+	settings: settings$7,
+	editor: editor$7,
+	state: state$7
+};
+
+var card$6 = {
+	power_off: "Apagar",
+	power_on: "Encender",
+	volume_down: "Bajar volumen",
+	volume_up: "Subir volumen",
+	mute: "Silenciar",
+	unmute: "Activar sonido",
+	volume_label: "VOLUMEN",
+	settings_title: "AJUSTES",
+	source_select: "Seleccionar fuente",
+	more_sources: "+{count} más",
+	unavailable: "—"
+};
+var settings$6 = {
+	bass: "GRAVES",
+	treble: "AGUDOS",
+	balance: "BALANCE",
+	speakers_a: "ALTAVOCES A",
+	speakers_b: "ALTAVOCES B",
+	tone_bypass: "BYPASS TONAL",
+	dimmer: "DIMMER"
+};
+var editor$6 = {
+	entity: "Entidad",
+	model: "Modelo",
+	theme: "Tema",
+	show_settings: "Mostrar panel de ajustes",
+	hide_volume: "Ocultar controles de volumen",
+	theme_silver: "Plata",
+	theme_black: "Negro",
+	theme_champagne: "Champán",
+	theme_minimal: "Mínimo",
+	settings_entities: "Entidades de ajustes",
+	bass_entity: "Entidad Graves",
+	treble_entity: "Entidad Agudos",
+	balance_entity: "Entidad Balance",
+	speakers_a_entity: "Entidad Altavoces A",
+	speakers_b_entity: "Entidad Altavoces B",
+	dimmer_entity: "Entidad Dimmer",
+	tone_bypass_entity: "Entidad Bypass Tonal"
+};
+var state$6 = {
+	on: "Encendido",
+	off: "Apagado",
+	standby: "En espera",
+	unavailable: "No disponible"
+};
+var es = {
+	card: card$6,
+	settings: settings$6,
+	editor: editor$6,
+	state: state$6
+};
+
+var card$5 = {
+	power_off: "Spegni",
+	power_on: "Accendi",
+	volume_down: "Abbassa volume",
+	volume_up: "Alza volume",
+	mute: "Muto",
+	unmute: "Riattiva audio",
+	volume_label: "VOLUME",
+	settings_title: "IMPOSTAZIONI",
+	source_select: "Seleziona sorgente",
+	more_sources: "+{count} altro",
+	unavailable: "—"
+};
+var settings$5 = {
+	bass: "BASSI",
+	treble: "ACUTI",
+	balance: "BILANCIAMENTO",
+	speakers_a: "DIFFUSORI A",
+	speakers_b: "DIFFUSORI B",
+	tone_bypass: "BYPASS TONALE",
+	dimmer: "DIMMER"
+};
+var editor$5 = {
+	entity: "Entità",
+	model: "Modello",
+	theme: "Tema",
+	show_settings: "Mostra pannello impostazioni",
+	hide_volume: "Nascondi controlli volume",
+	theme_silver: "Argento",
+	theme_black: "Nero",
+	theme_champagne: "Champagne",
+	theme_minimal: "Minimale",
+	settings_entities: "Entità impostazioni",
+	bass_entity: "Entità Bassi",
+	treble_entity: "Entità Acuti",
+	balance_entity: "Entità Bilanciamento",
+	speakers_a_entity: "Entità Diffusori A",
+	speakers_b_entity: "Entità Diffusori B",
+	dimmer_entity: "Entità Dimmer",
+	tone_bypass_entity: "Entità Bypass Tonale"
+};
+var state$5 = {
+	on: "Acceso",
+	off: "Spento",
+	standby: "Standby",
+	unavailable: "Non disponibile"
+};
+var it = {
+	card: card$5,
+	settings: settings$5,
+	editor: editor$5,
+	state: state$5
+};
+
+var card$4 = {
+	power_off: "Uitschakelen",
+	power_on: "Insakelen",
+	volume_down: "Volume verlagen",
+	volume_up: "Volume verhogen",
+	mute: "Dempen",
+	unmute: "Geluid activeren",
+	volume_label: "VOLUME",
+	settings_title: "INSTELLINGEN",
+	source_select: "Bron selecteren",
+	more_sources: "+{count} meer",
+	unavailable: "—"
+};
+var settings$4 = {
+	bass: "BASS",
+	treble: "HOOGTE",
+	balance: "BALANS",
+	speakers_a: "LUIDSPREKERS A",
+	speakers_b: "LUIDSPREKERS B",
+	tone_bypass: "TOON BYPASS",
+	dimmer: "DIMMER"
+};
+var editor$4 = {
+	entity: "Entiteit",
+	model: "Model",
+	theme: "Thema",
+	show_settings: "Instellingenpaneel tonen",
+	hide_volume: "Volumebediening verbergen",
+	theme_silver: "Zilver",
+	theme_black: "Zwart",
+	theme_champagne: "Champagne",
+	theme_minimal: "Minimaal",
+	settings_entities: "Instelling entiteiten",
+	bass_entity: "Bas entiteit",
+	treble_entity: "Hoogte entiteit",
+	balance_entity: "Balans entiteit",
+	speakers_a_entity: "Luidsprekers A entiteit",
+	speakers_b_entity: "Luidsprekers B entiteit",
+	dimmer_entity: "Dimmer entiteit",
+	tone_bypass_entity: "Toon Bypass entiteit"
+};
+var state$4 = {
+	on: "Aan",
+	off: "Uit",
+	standby: "Standby",
+	unavailable: "Niet beschikbaar"
+};
+var nl = {
+	card: card$4,
+	settings: settings$4,
+	editor: editor$4,
+	state: state$4
+};
+
+var card$3 = {
+	power_off: "Wyłącz",
+	power_on: "Włącz",
+	volume_down: "Ciszej",
+	volume_up: "Głośniej",
+	mute: "Wycisz",
+	unmute: "Przywróć dźwięk",
+	volume_label: "GŁOŚNOŚĆ",
+	settings_title: "USTAWIENIA",
+	source_select: "Wybierz źródło",
+	more_sources: "+{count} więcej",
+	unavailable: "—"
+};
+var settings$3 = {
+	bass: "BASY",
+	treble: "SOPRANY",
+	balance: "BALANS",
+	speakers_a: "GŁOŚNIKI A",
+	speakers_b: "GŁOŚNIKI B",
+	tone_bypass: "POMIJANIE TONU",
+	dimmer: "DIMMER"
+};
+var editor$3 = {
+	entity: "Encja",
+	model: "Model",
+	theme: "Motyw",
+	show_settings: "Pokaż panel ustawień",
+	hide_volume: "Ukryj sterowanie głośnością",
+	theme_silver: "Srebrny",
+	theme_black: "Czarny",
+	theme_champagne: "Szampański",
+	theme_minimal: "Minimalny",
+	settings_entities: "Encje ustawień",
+	bass_entity: "Encja basów",
+	treble_entity: "Encja sopranów",
+	balance_entity: "Encja balansu",
+	speakers_a_entity: "Encja głośników A",
+	speakers_b_entity: "Encja głośników B",
+	dimmer_entity: "Encja dimmera",
+	tone_bypass_entity: "Encja pomijania tonu"
+};
+var state$3 = {
+	on: "Włączony",
+	off: "Wyłączony",
+	standby: "Tryb czuwania",
+	unavailable: "Niedostępny"
+};
+var pl = {
+	card: card$3,
+	settings: settings$3,
+	editor: editor$3,
+	state: state$3
+};
+
+var card$2 = {
+	power_off: "Desligar",
+	power_on: "Ligar",
+	volume_down: "Baixar volume",
+	volume_up: "Aumentar volume",
+	mute: "Silenciar",
+	unmute: "Ativar som",
+	volume_label: "VOLUME",
+	settings_title: "CONFIGURAÇÕES",
+	source_select: "Selecionar fonte",
+	more_sources: "+{count} mais",
+	unavailable: "—"
+};
+var settings$2 = {
+	bass: "GRAVES",
+	treble: "AGUDOS",
+	balance: "BALANÇO",
+	speakers_a: "ALTO-FALANTES A",
+	speakers_b: "ALTO-FALANTES B",
+	tone_bypass: "BYPASS TONAL",
+	dimmer: "DIMMER"
+};
+var editor$2 = {
+	entity: "Entidade",
+	model: "Modelo",
+	theme: "Tema",
+	show_settings: "Mostrar painel de configurações",
+	hide_volume: "Ocultar controles de volume",
+	theme_silver: "Prata",
+	theme_black: "Preto",
+	theme_champagne: "Champanhe",
+	theme_minimal: "Mínimo",
+	settings_entities: "Entidades de configurações",
+	bass_entity: "Entidade Graves",
+	treble_entity: "Entidade Agudos",
+	balance_entity: "Entidade Balanço",
+	speakers_a_entity: "Entidade Alto-falantes A",
+	speakers_b_entity: "Entidade Alto-falantes B",
+	dimmer_entity: "Entidade Dimmer",
+	tone_bypass_entity: "Entidade Bypass Tonal"
+};
+var state$2 = {
+	on: "Ligado",
+	off: "Desligado",
+	standby: "Espera",
+	unavailable: "Indisponível"
+};
+var pt = {
+	card: card$2,
+	settings: settings$2,
+	editor: editor$2,
+	state: state$2
+};
+
+var card$1 = {
+	power_off: "关闭电源",
+	power_on: "开启电源",
+	volume_down: "降低音量",
+	volume_up: "增加音量",
+	mute: "静音",
+	unmute: "取消静音",
+	volume_label: "音量",
+	settings_title: "设置",
+	source_select: "选择输入源",
+	more_sources: "更多 {count} 个",
+	unavailable: "—"
+};
+var settings$1 = {
+	bass: "低音",
+	treble: "高音",
+	balance: "声道平衡",
+	speakers_a: "音箱 A",
+	speakers_b: "音箱 B",
+	tone_bypass: "音调直通",
+	dimmer: "显示调光"
+};
+var editor$1 = {
+	entity: "实体",
+	model: "型号",
+	theme: "主题",
+	show_settings: "显示设置面板",
+	hide_volume: "隐藏音量控制",
+	theme_silver: "银色",
+	theme_black: "黑色",
+	theme_champagne: "香槟金",
+	theme_minimal: "极简",
+	settings_entities: "设置实体",
+	bass_entity: "低音实体",
+	treble_entity: "高音实体",
+	balance_entity: "平衡实体",
+	speakers_a_entity: "音箱 A 实体",
+	speakers_b_entity: "音箱 B 实体",
+	dimmer_entity: "调光实体",
+	tone_bypass_entity: "音调直通实体"
+};
+var state$1 = {
+	on: "开启",
+	off: "关闭",
+	standby: "待机",
+	unavailable: "不可用"
+};
+var zhHans = {
+	card: card$1,
+	settings: settings$1,
+	editor: editor$1,
+	state: state$1
+};
+
+var card = {
+	power_off: "Выключить",
+	power_on: "Включить",
+	volume_down: "Уменьшить громкость",
+	volume_up: "Увеличить громкость",
+	mute: "Без звука",
+	unmute: "Включить звук",
+	volume_label: "ГРОМКОСТЬ",
+	settings_title: "НАСТРОЙКИ",
+	source_select: "Выбрать источник",
+	more_sources: "+{count} ещё",
+	unavailable: "—"
+};
+var settings = {
+	bass: "БАСС",
+	treble: "ВЫСОКИЕ",
+	balance: "БАЛАНС",
+	speakers_a: "ДИНАМИКИ A",
+	speakers_b: "ДИНАМИКИ B",
+	tone_bypass: "ОБХОД ТОНА",
+	dimmer: "ДИММЕР"
+};
+var editor = {
+	entity: "Сущность",
+	model: "Модель",
+	theme: "Тема",
+	show_settings: "Показать панель настроек",
+	hide_volume: "Скрыть управление громкостью",
+	theme_silver: "Серебро",
+	theme_black: "Чёрный",
+	theme_champagne: "Шампань",
+	theme_minimal: "Минимальный",
+	settings_entities: "Сущности настроек",
+	bass_entity: "Сущность басса",
+	treble_entity: "Сущность высоких",
+	balance_entity: "Сущность баланса",
+	speakers_a_entity: "Сущность динамиков A",
+	speakers_b_entity: "Сущность динамиков B",
+	dimmer_entity: "Сущность диммера",
+	tone_bypass_entity: "Сущность обхода тона"
+};
+var state = {
+	on: "Вкл",
+	off: "Выкл",
+	standby: "Ожидание",
+	unavailable: "Недоступно"
+};
+var ru = {
+	card: card,
+	settings: settings,
+	editor: editor,
+	state: state
+};
+
+const languages = {
+    en,
+    de,
+    fr,
+    es,
+    it,
+    nl,
+    pl,
+    pt,
+    "zh-Hans": zhHans,
+    ru,
+};
+const FALLBACK_LANG = "en";
+function normalizeLanguageCode(lang) {
+    if (!lang)
+        return FALLBACK_LANG;
+    const exactMatch = lang;
+    if (exactMatch in languages)
+        return exactMatch;
+    const lowerLang = lang.toLowerCase();
+    const lowerExactMatch = lowerLang;
+    if (lowerExactMatch in languages)
+        return lowerExactMatch;
+    const baseLang = lowerLang.split("-")[0];
+    if (baseLang === "zh") {
+        return "zh-Hans";
+    }
+    if (baseLang in languages)
+        return baseLang;
+    return FALLBACK_LANG;
+}
+function getLanguage(hass) {
+    const lang = hass.locale?.language ?? hass.language ?? "en";
+    return normalizeLanguageCode(lang);
+}
+function localize(hass, namespace, key, params) {
+    const lang = getLanguage(hass);
+    const dict = languages[lang] ?? languages[FALLBACK_LANG];
+    const ns = dict[namespace];
+    if (!ns)
+        return key;
+    let translation = ns[key];
+    if (!translation) {
+        const fallbackNs = languages[FALLBACK_LANG][namespace];
+        translation = fallbackNs?.[key] ?? key;
+    }
+    return translation;
+}
+
 let RotelCardEditor = class RotelCardEditor extends i {
     setConfig(config) {
         this._config = config;
@@ -91,23 +680,26 @@ let RotelCardEditor = class RotelCardEditor extends i {
         if (!this._config || !this.hass)
             return b ``;
         const showSettings = this._config.show_settings === true;
+        const t = (ns, key) => localize(this.hass, ns, key);
         const schema = [
-            { name: "entity", selector: { entity: { domain: "media_player" } } },
-            { name: "model", selector: { text: {} } },
+            { name: "entity", label: t("editor", "entity"), selector: { entity: { domain: "media_player" } } },
+            { name: "model", label: t("editor", "model"), selector: { text: {} } },
             {
                 name: "theme",
+                label: t("editor", "theme"),
                 selector: {
                     select: {
                         options: ["silver", "black", "champagne", "minimal"],
                         mode: "dropdown",
+                        translation_key: "theme",
                     },
                 },
             },
-            { name: "show_settings", selector: { boolean: {} } },
-            { name: "hide_volume", selector: { boolean: {} } },
+            { name: "show_settings", label: t("editor", "show_settings"), selector: { boolean: {} } },
+            { name: "hide_volume", label: t("editor", "hide_volume"), selector: { boolean: {} } },
         ];
         if (showSettings) {
-            schema.push({ name: "settings_entities.bass", selector: { entity: { domain: "number" } } }, { name: "settings_entities.treble", selector: { entity: { domain: "number" } } }, { name: "settings_entities.balance", selector: { entity: { domain: "number" } } }, { name: "settings_entities.speakers_a", selector: { entity: { domain: "switch" } } }, { name: "settings_entities.speakers_b", selector: { entity: { domain: "switch" } } }, { name: "settings_entities.dimmer", selector: { entity: { domain: "select" } } }, { name: "settings_entities.tone_bypass", selector: { entity: { domain: "switch" } } });
+            schema.push({ name: "settings_entities.bass", label: t("editor", "bass_entity"), selector: { entity: { domain: "number" } } }, { name: "settings_entities.treble", label: t("editor", "treble_entity"), selector: { entity: { domain: "number" } } }, { name: "settings_entities.balance", label: t("editor", "balance_entity"), selector: { entity: { domain: "number" } } }, { name: "settings_entities.speakers_a", label: t("editor", "speakers_a_entity"), selector: { entity: { domain: "switch" } } }, { name: "settings_entities.speakers_b", label: t("editor", "speakers_b_entity"), selector: { entity: { domain: "switch" } } }, { name: "settings_entities.dimmer", label: t("editor", "dimmer_entity"), selector: { entity: { domain: "select" } } }, { name: "settings_entities.tone_bypass", label: t("editor", "tone_bypass_entity"), selector: { entity: { domain: "switch" } } });
         }
         return b `
       <ha-form

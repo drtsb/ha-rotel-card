@@ -1,4 +1,6 @@
-# Rotel Card for Home Assistant
+<div align="center"><img src="logo.png" alt="Rotel Card Logo"></div>
+
+# <img src="icon.png" alt="Rotel Card" width="32" height="32" align="middle"> Rotel Card for Home Assistant
 
 [![Created by AI](https://img.shields.io/badge/Created_by-AI-8A2BE2.svg)](https://github.com/drtsb/ha-rotel-card)
 [![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/drtsb/5e769a47fbc65bc9181cb2140eaed0d5/raw/rotel-card-coverage.json)](https://github.com/drtsb/ha-rotel-card/actions)
@@ -33,6 +35,7 @@ Inspired by the clean, minimal aesthetic of Hi-Fi equipment with a focus on volu
 - Four built-in color themes (**Silver**, **Black**, **Champagne**, **Minimal**) plus support for custom CSS variables (`theme_variables`)
 - Smart handling of fixed-volume sources (volume slider is automatically disabled)
 - Slide-out panel with additional settings (**Bass**, **Treble**, **Balance**) that can be hidden (`show_settings`)
+- **Multi-language support**: English, German, French, Spanish, Italian, Dutch, Polish, Portuguese, Simplified Chinese, Russian (auto-detected from Home Assistant locale)
 - Covered by unit tests (**Vitest**) with a configured **CI/CD** pipeline
 
 ## Installation

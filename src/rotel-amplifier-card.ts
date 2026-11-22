@@ -5,6 +5,7 @@ import {
 } from "custom-card-helpers";
 
 import "./rotel-card-editor";
+import { localize, getLanguage, type SupportedLanguage } from "./localize/localize";
 
 type ThemePreset = "silver" | "black" | "champagne" | "minimal";
 
@@ -232,6 +233,9 @@ export class RotelAmplifierCard extends LitElement {
     const displaySources = sources.slice(0, 12);
     const hasMoreSources = sources.length > 12;
 
+    const t = (ns: keyof import("./localize/localize").TranslationKeys, key: string, params?: Record<string, string | number>) =>
+      localize(this.hass, ns, key, params);
+
     return html`
       <ha-card>
         <div class="wrap">
@@ -242,7 +246,7 @@ export class RotelAmplifierCard extends LitElement {
             </div>
             <ha-icon-button
               class="power ${on ? "on" : "off"}"
-              .label=${on ? "Power off" : "Power on"}
+              .label=${on ? t("card", "power_off") : t("card", "power_on")}
               @click=${this._togglePower}
             >
               <ha-icon icon="mdi:power"></ha-icon>
@@ -250,18 +254,18 @@ export class RotelAmplifierCard extends LitElement {
           </div>
           <div class="volume">
             <div class="vnum">${Math.round(volume * 96)}</div>
-            <div class="vlabel">VOLUME</div>
+            <div class="vlabel">${t("card", "volume_label")}</div>
             <input type="range" min="0" max="96" step="1" .value=${String(Math.round(volume * 96))}
               ?disabled=${fixedVolume} @input=${this._setVolume} />
           </div>
           <div class="controls">
-            <ha-icon-button class="control-btn vol" .label=${"Volume down"} ?disabled=${fixedVolume} @click=${this._volumeDown}>
+            <ha-icon-button class="control-btn vol" .label=${t("card", "volume_down")} ?disabled=${fixedVolume} @click=${this._volumeDown}>
               <ha-icon icon="mdi:volume-minus"></ha-icon>
             </ha-icon-button>
-            <ha-icon-button class="control-btn vol mute" .label=${muted ? "Unmute" : "Mute"} ?disabled=${fixedVolume} @click=${this._mute}>
+            <ha-icon-button class="control-btn vol mute" .label=${muted ? t("card", "unmute") : t("card", "mute")} ?disabled=${fixedVolume} @click=${this._mute}>
               <ha-icon icon=${muted ? "mdi:volume-off" : "mdi:volume-high"}></ha-icon>
             </ha-icon-button>
-            <ha-icon-button class="control-btn vol" .label=${"Volume up"} ?disabled=${fixedVolume} @click=${this._volumeUp}>
+            <ha-icon-button class="control-btn vol" .label=${t("card", "volume_up")} ?disabled=${fixedVolume} @click=${this._volumeUp}>
               <ha-icon icon="mdi:volume-plus"></ha-icon>
             </ha-icon-button>
           </div>
@@ -274,7 +278,7 @@ export class RotelAmplifierCard extends LitElement {
                     <div class="source-led" aria-hidden="true"></div>
                     <button
                       class="rotel-btn"
-                      aria-label=${`Select source ${s}`}
+                      aria-label=${t("card", "source_select", { source: s })}
                       @click=${() => this._selectSource(s)}
                     ></button>
                   </div>
@@ -282,23 +286,23 @@ export class RotelAmplifierCard extends LitElement {
             </div>
             ${hasMoreSources ? html`
               <div class="source-truncation" aria-live="polite">
-                +${sources.length - 12} more
+                ${t("card", "more_sources", { count: sources.length - 12 })}
               </div>
             ` : ""}
           </div>
           ${hasSettingsToShow ? html`
             <div class="settings-panel">
               <div class="settings-header">
-                <span class="settings-title">SETTINGS</span>
+                <span class="settings-title">${t("card", "settings_title")}</span>
               </div>
               <div class="settings-grid">
-                ${this._renderNumberSetting("BASS", bassState, settingsEntities.bass)}
-                ${this._renderNumberSetting("TREBLE", trebleState, settingsEntities.treble)}
-                ${this._renderNumberSetting("BALANCE", balanceState, settingsEntities.balance)}
-                ${this._renderSwitchSetting("SPEAKERS A", speakersAState, settingsEntities.speakers_a)}
-                ${this._renderSwitchSetting("SPEAKERS B", speakersBState, settingsEntities.speakers_b)}
-                ${this._renderSwitchSetting("TONE BYPASS", toneBypassState, settingsEntities.tone_bypass)}
-                ${this._renderSelectSetting("DIMMER", dimmerState, settingsEntities.dimmer)}
+                ${this._renderNumberSetting(t("settings", "bass"), bassState, settingsEntities.bass)}
+                ${this._renderNumberSetting(t("settings", "treble"), trebleState, settingsEntities.treble)}
+                ${this._renderNumberSetting(t("settings", "balance"), balanceState, settingsEntities.balance)}
+                ${this._renderSwitchSetting(t("settings", "speakers_a"), speakersAState, settingsEntities.speakers_a)}
+                ${this._renderSwitchSetting(t("settings", "speakers_b"), speakersBState, settingsEntities.speakers_b)}
+                ${this._renderSwitchSetting(t("settings", "tone_bypass"), toneBypassState, settingsEntities.tone_bypass)}
+                ${this._renderSelectSetting(t("settings", "dimmer"), dimmerState, settingsEntities.dimmer)}
               </div>
             </div>
           ` : ""}
@@ -318,11 +322,12 @@ export class RotelAmplifierCard extends LitElement {
     const min = Number(stateObj.attributes.min) ?? -10;
     const max = Number(stateObj.attributes.max) ?? 10;
     const step = Number(stateObj.attributes.step) ?? 1;
+    const unavailLabel = localize(this.hass, "card", "unavailable");
 
     return html`
       <div class="setting-item ${unavailable ? "unavailable" : ""}">
         <div class="setting-label">${label}</div>
-        <div class="setting-value">${unavailable ? "—" : stateObj.state}</div>
+        <div class="setting-value">${unavailable ? unavailLabel : stateObj.state}</div>
         <ha-slider
           min=${min}
           max=${max}
@@ -364,11 +369,12 @@ export class RotelAmplifierCard extends LitElement {
     if (!stateObj || !entityId) return html``;
     const unavailable = stateObj.state === "unavailable" || stateObj.state === "unknown";
     const options = (stateObj.attributes.options as string[] | undefined) ?? [];
+    const unavailLabel = localize(this.hass, "card", "unavailable");
 
     return html`
       <div class="setting-item ${unavailable ? "unavailable" : ""}">
         <div class="setting-label">${label}</div>
-        <div class="setting-value">${unavailable ? "—" : stateObj.state}</div>
+        <div class="setting-value">${unavailable ? unavailLabel : stateObj.state}</div>
         <ha-select
           .value=${stateObj.state}
           ?disabled=${unavailable}

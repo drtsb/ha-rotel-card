@@ -1,5 +1,6 @@
 import resolve from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
+import json from "@rollup/plugin-json";
 
 export default [
   {
@@ -9,7 +10,7 @@ export default [
       format: "es",
       inlineDynamicImports: true
     },
-    plugins: [resolve(), typescript({ tsconfig: "./tsconfig.json" })],
+    plugins: [resolve(), json(), typescript({ tsconfig: "./tsconfig.json" })],
   },
   {
     input: "src/rotel-card-editor.ts",
@@ -18,6 +19,6 @@ export default [
       format: "es",
       inlineDynamicImports: true
     },
-    plugins: [resolve(), typescript({ tsconfig: "./tsconfig.json" })],
+    plugins: [resolve(), json(), typescript({ tsconfig: "./tsconfig.json" })],
   },
 ];

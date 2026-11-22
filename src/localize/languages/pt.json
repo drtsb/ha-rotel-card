@@ -1,0 +1,49 @@
+{
+  "card": {
+    "power_off": "Desligar",
+    "power_on": "Ligar",
+    "volume_down": "Baixar volume",
+    "volume_up": "Aumentar volume",
+    "mute": "Silenciar",
+    "unmute": "Ativar som",
+    "volume_label": "VOLUME",
+    "settings_title": "CONFIGURAÇÕES",
+    "source_select": "Selecionar fonte",
+    "more_sources": "+{count} mais",
+    "unavailable": "—"
+  },
+  "settings": {
+    "bass": "GRAVES",
+    "treble": "AGUDOS",
+    "balance": "BALANÇO",
+    "speakers_a": "ALTO-FALANTES A",
+    "speakers_b": "ALTO-FALANTES B",
+    "tone_bypass": "BYPASS TONAL",
+    "dimmer": "DIMMER"
+  },
+  "editor": {
+    "entity": "Entidade",
+    "model": "Modelo",
+    "theme": "Tema",
+    "show_settings": "Mostrar painel de configurações",
+    "hide_volume": "Ocultar controles de volume",
+    "theme_silver": "Prata",
+    "theme_black": "Preto",
+    "theme_champagne": "Champanhe",
+    "theme_minimal": "Mínimo",
+    "settings_entities": "Entidades de configurações",
+    "bass_entity": "Entidade Graves",
+    "treble_entity": "Entidade Agudos",
+    "balance_entity": "Entidade Balanço",
+    "speakers_a_entity": "Entidade Alto-falantes A",
+    "speakers_b_entity": "Entidade Alto-falantes B",
+    "dimmer_entity": "Entidade Dimmer",
+    "tone_bypass_entity": "Entidade Bypass Tonal"
+  },
+  "state": {
+    "on": "Ligado",
+    "off": "Desligado",
+    "standby": "Espera",
+    "unavailable": "Indisponível"
+  }
+}
