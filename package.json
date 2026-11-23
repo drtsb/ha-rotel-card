@@ -1,6 +1,6 @@
 {
   "name": "ha-rotel-card",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "private": true,
   "description": "Custom Lovelace card for Rotel amplifiers via ha-rotel integration",
   "keywords": [

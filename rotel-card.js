@@ -1248,26 +1248,36 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
       .vfd-display {
         display: flex;
         flex-direction: column;
-        gap: 0.35rem;
+        gap: 0.4rem;
+        width: 100%;
+        max-width: 380px;
+        margin: 0 auto;
+        box-sizing: border-box;
         background: #070a0d;
         border: 1px solid #141b23;
         border-radius: 6px;
-        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.9);
+        box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.9);
         padding: 0.5rem 0.75rem;
-        min-height: 2.75rem;
+        min-height: 80px;
         color: #4deeea;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-        font-size: 0.875rem;
-        letter-spacing: 2px;
+        font-size: 21px;
+        font-weight: 500;
+        letter-spacing: 2.5px;
         text-transform: uppercase;
-        line-height: 1.35;
-        background-image: repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 1.5px,
-          rgba(77, 238, 234, 0.04) 1.5px,
-          rgba(77, 238, 234, 0.04) 3px
-        );
+        line-height: 1.3;
+        position: relative;
+        overflow: hidden;
+      }
+      .vfd-display::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 6px;
+        pointer-events: none;
+        z-index: 1;
+        background-image: radial-gradient(circle, rgba(77, 238, 234, 0.10) 1px, transparent 1px);
+        background-size: 8px 8px;
       }
       .vfd-line1,
       .vfd-line2 {
@@ -1275,12 +1285,12 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         justify-content: space-between;
         align-items: baseline;
         width: 100%;
+        gap: 16px;
+        position: relative;
+        z-index: 2;
       }
       .vfd-line2.vfd-line2--center {
         justify-content: center;
-      }
-      .vfd-line2 {
-        font-size: 0.8rem;
       }
       .vfd-source,
       .vfd-volume,
@@ -1291,13 +1301,21 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         text-shadow: 0 0 6px rgba(56, 217, 255, 0.65);
       }
 
-      /* Display off / standby – filaments darken */
+      /* Display off / standby – fully extinguished dark glass, no text or glow */
       .vfd-display.off {
         background: #040709;
         border-color: #0c141c;
-        color: #0e161d;
+        color: #040709;
         text-shadow: none;
-        opacity: 0.45;
+      }
+      .vfd-display.off::after {
+        background-image: none;
+      }
+      .vfd-display.off .vfd-line1,
+      .vfd-display.off .vfd-line2 {
+        visibility: hidden;
+        opacity: 0;
+        text-shadow: none;
       }
 
       /* Minimal theme – flat Home Assistant style without heavy shadows */
@@ -1306,6 +1324,9 @@ let RotelAmplifierCard = class RotelAmplifierCard extends i {
         border: 1px solid var(--rotel-border, var(--divider-color, #e0e0e0));
         border-radius: 4px;
         box-shadow: none;
+        background-image: none;
+      }
+      :host([data-theme="minimal"]) .vfd-display::after {
         background-image: none;
       }
       :host([data-theme="minimal"]) .vfd-display.off {
