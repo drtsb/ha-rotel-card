@@ -412,11 +412,12 @@ describe("rotel-amplifier-card", () => {
     vi.useRealTimers();
   });
 
-  it("displays volume in 0-96 Rotel scale", async () => {
+  it("displays volume in 0-96 Rotel scale on the VFD display", async () => {
     const { card } = await createCard({}, { volume_level: 0.5 });
 
-    const vnum = query(card, ".vnum");
-    expect(vnum.textContent?.trim()).toBe("48");
+    const vfdVolume = query(card, ".vfd-volume");
+    expect(vfdVolume.textContent?.trim()).toBe("VOL 48");
+    expect(query(card, ".vfd-display")).toBeDefined();
   });
 
   it("sends volume_set with 0-1 scale when slider changed", async () => {

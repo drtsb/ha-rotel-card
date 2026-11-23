@@ -6,6 +6,7 @@
     "volume_up": "增加音量",
     "mute": "静音",
     "unmute": "取消静音",
+    "volume_fixed": "VOL FIX",
     "volume_label": "音量",
     "settings_title": "设置",
     "source_select": "选择输入源",

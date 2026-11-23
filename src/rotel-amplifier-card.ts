@@ -260,9 +260,14 @@ export class RotelAmplifierCard extends LitElement {
               </button>
             </div>
           </div>
-          <div class="volume">
-            <div class="vnum">${Math.round(volume * 96)}</div>
-            <div class="vlabel">${t("card", "volume_label")}</div>
+            <div class="volume">
+              <div class="vfd-display ${on ? "" : "off"}" aria-label=${`${source} ${this._volumeStatus(this.hass, volume, muted, fixedVolume)}`}>
+                <div class="vfd-line1">
+                  <span class="vfd-source">${source.toUpperCase()}</span>
+                  <span class="vfd-volume">${this._volumeStatus(this.hass, volume, muted, fixedVolume)}</span>
+                </div>
+                <div class="vfd-line2">${this._renderVfdLine2(this.hass, on, toneBypassState, bassState, trebleState)}</div>
+              </div>
             <input type="range" min="0" max="96" step="1" .value=${String(Math.round(volume * 96))}
               ?disabled=${fixedVolume} @input=${this._setVolume} />
           </div>
@@ -306,6 +311,59 @@ export class RotelAmplifierCard extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  private _volumeStatus(hass: HomeAssistant, volume: number, muted: boolean, fixedVolume: boolean): string {
+    if (muted) return localize(hass, "card", "mute").toUpperCase();
+    if (fixedVolume) return localize(hass, "card", "volume_fixed").toUpperCase();
+    return `VOL ${Math.round(volume * 96)}`;
+  }
+
+  private _formatToneValue(value: number): string {
+    if (value > 0) return `+${value}`;
+    if (value < 0) return String(value);
+    return "0";
+  }
+
+  private _renderVfdLine2(
+    hass: HomeAssistant,
+    on: boolean,
+    toneBypassState: { state: string } | null | undefined,
+    bassState: { state: string } | null | undefined,
+    trebleState: { state: string } | null | undefined
+  ) {
+    if (!on) {
+      return html`<div class="vfd-line2"></div>`;
+    }
+    const toneBypassOn = toneBypassState?.state === "on";
+    const bass = bassState ? Number(bassState.state) : NaN;
+    const treble = trebleState ? Number(trebleState.state) : NaN;
+    const bassOk =
+      bassState &&
+      bassState.state !== "unavailable" &&
+      bassState.state !== "unknown" &&
+      !Number.isNaN(bass);
+    const trebleOk =
+      trebleState &&
+      trebleState.state !== "unavailable" &&
+      trebleState.state !== "unknown" &&
+      !Number.isNaN(treble);
+
+    if (toneBypassOn) {
+      return html`<div class="vfd-line2 vfd-line2--center"><span class="vfd-tone">${localize(hass, "settings", "tone_bypass")}</span></div>`;
+    }
+    if (bassOk && trebleOk) {
+      return html`
+        <div class="vfd-line2">
+          <span class="vfd-bass">BASS ${this._formatToneValue(bass)}</span>
+          <span class="vfd-treble">TREB ${this._formatToneValue(treble)}</span>
+        </div>
+      `;
+    }
+    if (on) {
+      return html`<div class="vfd-line2 vfd-line2--center"><span class="vfd-ready">READY</span></div>`;
+    }
+    return html`<div class="vfd-line2"></div>`;
   }
 
   private _renderNumberSetting(
@@ -488,9 +546,84 @@ export class RotelAmplifierCard extends LitElement {
       .header-controls .rotel-btn.mute.muted .mute-icon { color: #f5c518; filter: drop-shadow(0 0 6px rgba(255, 204, 0, 0.7)); }
       .header-controls .rotel-btn.mute:not(.muted) .mute-icon { color: var(--rotel-text-muted, #555); }
       .header-controls .rotel-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
-      .volume { text-align: center; background: var(--rotel-display-bg, transparent); }
-      .vnum { font-size: 3rem; font-weight: 300; color: var(--rotel-display-text, #c9a227); }
-      .vlabel { font-size: 0.6875rem; letter-spacing: 2px; color: var(--rotel-text-muted, var(--secondary-text-color, #888)); }
+      .volume { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+
+      /* Two-line VFD display imitating Rotel amplifiers (e.g. RA-1572) */
+      .vfd-display {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        background: #070a0d;
+        border: 1px solid #141b23;
+        border-radius: 6px;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.9);
+        padding: 0.5rem 0.75rem;
+        min-height: 2.75rem;
+        color: #4deeea;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 0.875rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        line-height: 1.35;
+        background-image: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 1.5px,
+          rgba(77, 238, 234, 0.04) 1.5px,
+          rgba(77, 238, 234, 0.04) 3px
+        );
+      }
+      .vfd-line1,
+      .vfd-line2 {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        width: 100%;
+      }
+      .vfd-line2.vfd-line2--center {
+        justify-content: center;
+      }
+      .vfd-line2 {
+        font-size: 0.8rem;
+      }
+      .vfd-source,
+      .vfd-volume,
+      .vfd-bass,
+      .vfd-treble,
+      .vfd-tone,
+      .vfd-ready {
+        text-shadow: 0 0 6px rgba(56, 217, 255, 0.65);
+      }
+
+      /* Display off / standby – filaments darken */
+      .vfd-display.off {
+        background: #040709;
+        border-color: #0c141c;
+        color: #0e161d;
+        text-shadow: none;
+        opacity: 0.45;
+      }
+
+      /* Minimal theme – flat Home Assistant style without heavy shadows */
+      :host([data-theme="minimal"]) .vfd-display {
+        background: transparent;
+        border: 1px solid var(--rotel-border, var(--divider-color, #e0e0e0));
+        border-radius: 4px;
+        box-shadow: none;
+        background-image: none;
+      }
+      :host([data-theme="minimal"]) .vfd-display.off {
+        background: transparent;
+      }
+      :host([data-theme="minimal"]) .vfd-source,
+      :host([data-theme="minimal"]) .vfd-volume,
+      :host([data-theme="minimal"]) .vfd-bass,
+      :host([data-theme="minimal"]) .vfd-treble,
+      :host([data-theme="minimal"]) .vfd-tone,
+      :host([data-theme="minimal"]) .vfd-ready {
+        color: var(--rotel-display-text, var(--primary-color, #1976d2));
+        text-shadow: none;
+      }
       input[type=range] { width: 100%; }
       input[type=range][disabled] { opacity: 0.4; cursor: not-allowed; }
 
