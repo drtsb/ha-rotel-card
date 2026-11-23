@@ -208,6 +208,13 @@ describe("rotel-amplifier-card vfd-display", () => {
     expect(query(card, ".vfd-display").classList.contains("off")).toBe(true);
   });
 
+  it("keeps line 1 and line 2 blocks in off state so the display does not collapse", async () => {
+    const { card } = await createCard({}, { state: "off" });
+
+    expect(queryOptional(card, ".vfd-line1")).not.toBeNull();
+    expect(queryOptional(card, ".vfd-line2")).not.toBeNull();
+  });
+
   it("leaves line 2 empty in off state even when settings entities are configured", async () => {
     const { card } = await createCard(
       { show_settings: true, settings_entities: { bass: BASS_ENTITY, treble: TREBLE_ENTITY } },
